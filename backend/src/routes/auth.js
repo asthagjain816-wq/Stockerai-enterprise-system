@@ -1,0 +1,251 @@
+const express = require('express');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const bcrypt = require('bcryptjs');
+const User = require('../models/User');
+
+const router = express.Router();
+
+// ============================================
+// LOCAL STRATEGY (Email/Password Login)
+// ============================================
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: 'email',
+      passwordField: 'password',
+    },
+    async (email, password, done) => {
+      try {
+        const user = await User.findOne({ email }).select('+password');
+        if (!user) {
+          return done(null, false, { message: 'User not found' });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+          return done(null, false, { message: 'Invalid password' });
+        }
+
+        return done(null, user);
+      } catch (error) {
+        return done(error);
+      }
+    }
+  )
+);
+
+// ============================================
+// GOOGLE OAUTH STRATEGY
+// ============================================
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: `${process.env.BACKEND_URL}/api/auth/google/callback`,
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        const email = profile.emails?.[0]?.value;
+
+// 1️⃣ Check by googleId
+let user = await User.findOne({ googleId: profile.id });
+
+if (user) {
+  return done(null, user);
+}
+
+// 2️⃣ Check if email already exists
+user = await User.findOne({ email });
+
+if (user) {
+  // 👉 Existing user ko Google se link karo
+  user.googleId = profile.id;
+  await user.save();
+
+  return done(null, user);
+}
+
+// 3️⃣ New user create karo
+const newUser = await User.create({
+  googleId: profile.id,
+  fullName: profile.displayName,
+  email,
+  password: null,
+});
+
+return done(null, newUser);
+
+        return done(null, newUser);
+      } catch (error) {
+        console.error('Google Strategy Error:', error);
+        return done(error, null);
+      }
+    }
+  )
+);
+
+// ============================================
+// SERIALIZE & DESERIALIZE
+// ============================================
+passport.serializeUser((user, done) => {
+  done(null, user._id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (error) {
+    done(error, null);
+  }
+});
+
+// ============================================
+// AUTH ROUTES
+// ============================================
+
+// Register
+router.post('/register', async (req, res) => {
+  try {
+    const { fullName, email, password, confirmPassword } = req.body;
+
+    if (!fullName || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide all required fields',
+      });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Passwords do not match',
+      });
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email already registered',
+      });
+    }
+
+    // Hash password BEFORE creating user
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user with hashed password
+    const user = new User({
+      fullName,
+      email,
+      password: hashedPassword,
+    });
+
+    await user.save(); // Save करो
+
+    req.logIn(user, (err) => {
+      if (err) {
+        return res.status(500).json({
+          success: false,
+          message: 'Login failed',
+        });
+      }
+
+      return res.status(201).json({
+        success: true,
+        message: 'User registered successfully',
+        user: {
+          id: user._id,
+          fullName: user.fullName,
+          email: user.email,
+        },
+      });
+    });
+  } catch (error) {
+    console.error('Register Error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Registration failed',
+    });
+  }
+});
+
+// Local Login
+router.post('/login', passport.authenticate('local'), (req, res) => {
+  try {
+    return res.status(200).json({
+      success: true,
+      message: 'Login successful',
+      user: {
+        id: req.user._id,
+        fullName: req.user.fullName,
+        email: req.user.email,
+      },
+    });
+  } catch (error) {
+    console.error('Login Error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Login failed',
+    });
+  }
+});
+
+// Google Login Initiate
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+// Google Callback
+router.get(
+  '/google/callback',
+  (req, res, next) => {
+    passport.authenticate('google', {
+      failureRedirect: `${process.env.FRONTEND_URL}/login`,
+      session: true,
+    })(req, res, next);
+  },
+  (req, res) => {
+    // Successful authentication
+    res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
+  }
+);
+
+// Get Current User
+router.get('/me', (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({
+      success: false,
+      message: 'Not authenticated',
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    user: {
+      id: req.user._id,
+      fullName: req.user.fullName,
+      email: req.user.email,
+    },
+  });
+});
+
+// Logout
+router.post('/logout', (req, res) => {
+  req.logOut((err) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        message: 'Logout failed',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Logged out successfully',
+    });
+  });
+});
+
+module.exports = router;
