@@ -1,15 +1,36 @@
 import { create } from 'zustand';
 
+const API_URL = 'http://localhost:5000/api/auth';
+
 const useAuthStore = create((set) => ({
   user: null,
   isAuthenticated: false,
-  loading: false,
+  loading: true,
   error: null,
+
+  checkAuth: async () => {
+    set({ loading: true, error: null });
+    try {
+      const response = await fetch(`${API_URL}/me`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+      const data = await response.json();
+      if (data.success) {
+        set({ user: data.user, isAuthenticated: true, loading: false });
+      } else {
+        set({ user: null, isAuthenticated: false, loading: false });
+      }
+    } catch (err) {
+      set({ user: null, isAuthenticated: false, loading: false });
+    }
+  },
 
   login: async (email, password) => {
     set({ loading: true, error: null });
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch(`${API_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -32,7 +53,7 @@ const useAuthStore = create((set) => ({
   register: async (formData) => {
     set({ loading: true, error: null });
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
+      const response = await fetch(`${API_URL}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -52,8 +73,18 @@ const useAuthStore = create((set) => ({
     }
   },
 
-  logout: () => {
-    set({ user: null, isAuthenticated: false, error: null });
+  logout: async () => {
+    set({ loading: true });
+    try {
+      await fetch(`${API_URL}/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      set({ user: null, isAuthenticated: false, loading: false, error: null });
+    }
   },
 
   clearError: () => set({ error: null }),

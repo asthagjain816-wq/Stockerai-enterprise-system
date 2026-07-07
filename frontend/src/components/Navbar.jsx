@@ -1,98 +1,88 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
 import useThemeStore from '../store/themeStore';
-import { Bell, Search, Menu, X, Moon, Sun, LogOut, User } from 'lucide-react';
+import { Bell, Menu, X, Moon, Sun, User, Settings, LogOut } from 'lucide-react';
 
 export default function Navbar({ sidebarOpen, setSidebarOpen }) {
+  const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const { isDark, toggleTheme } = useThemeStore();
 
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef(null);
 
   const notifications = [
-    { id: 1, message: 'New order received', time: '5 min ago' },
-    { id: 2, message: 'Low stock alert', time: '1 hour ago' },
-    { id: 3, message: 'New supplier added', time: '2 hours ago' },
+    { id: 1, message: 'New collective order generated', time: 'Just now' },
+    { id: 2, message: 'Low stock items detected', time: '1 hour ago' },
   ];
 
-  const handleLogout = () => {
-    logout();
-    window.location.href = '/login';
+  // Close dropdown on clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setProfileOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
   };
 
   return (
     <nav
       className={`${
-        isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'
-      } shadow-sm flex items-center justify-between px-6 h-20 border-b sticky top-0 z-30`}
+        isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white/80 border-gray-200'
+      } backdrop-blur-md shadow-sm flex items-center justify-between px-6 h-20 border-b sticky top-0 z-30`}
     >
-      {/* Left */}
       <div className="flex items-center gap-4">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className={`p-2 rounded-lg transition ${
-            isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'
-          } hidden md:block`}
+            isDark ? 'hover:bg-slate-800 text-slate-300' : 'hover:bg-gray-100 text-gray-700'
+          }`}
         >
           {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      {/* Center - Search */}
-      <div className="flex-1 max-w-xs mx-auto hidden sm:flex">
-        <div
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg w-full ${
-            isDark ? 'bg-slate-700' : 'bg-gray-100'
+      <div className="flex items-center gap-5">
+        {/* Dark Mode toggle */}
+        <button
+          onClick={toggleTheme}
+          className={`p-2.5 rounded-xl transition ${
+            isDark ? 'hover:bg-slate-800 text-yellow-400' : 'hover:bg-gray-100 text-slate-600'
           }`}
         >
-          <Search
-            size={18}
-            className={isDark ? 'text-slate-400' : 'text-gray-400'}
-          />
-          <input
-            type="text"
-            placeholder="Search..."
-            className={`bg-transparent outline-none text-sm w-full ${
-              isDark
-                ? 'text-white placeholder-slate-500'
-                : 'text-gray-700'
-            }`}
-          />
-        </div>
-      </div>
+          {isDark ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
 
-      {/* Right */}
-      <div className="flex items-center gap-6">
         {/* Notifications */}
         <div className="relative">
           <button
             onClick={() => setNotificationOpen(!notificationOpen)}
-            className={`p-2 rounded-lg relative transition ${
-              isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'
+            className={`p-2.5 rounded-xl relative transition ${
+              isDark ? 'hover:bg-slate-800 text-slate-300' : 'hover:bg-gray-100 text-slate-650'
             }`}
           >
-            <Bell
-              size={22}
-              className={isDark ? 'text-slate-300' : 'text-gray-600'}
-            />
-            <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></span>
+            <Bell size={20} />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
           </button>
 
           {notificationOpen && (
             <div
-              className={`absolute right-0 mt-2 w-80 rounded-xl shadow-2xl border z-50 ${
+              className={`absolute right-0 mt-2.5 w-80 rounded-2xl shadow-2xl border z-50 animate-scale-up ${
                 isDark
-                  ? 'bg-slate-800 border-slate-700'
-                  : 'bg-white border-gray-200'
+                  ? 'bg-slate-800/95 border-slate-700 text-white'
+                  : 'bg-white/95 border-gray-200 text-gray-800'
               }`}
             >
-              <div
-                className={`p-4 border-b ${
-                  isDark ? 'border-slate-700' : 'border-gray-200'
-                }`}
-              >
+              <div className={`p-4 border-b ${isDark ? 'border-slate-700' : 'border-gray-250'}`}>
                 <h3 className="font-bold">Notifications</h3>
               </div>
 
@@ -100,16 +90,12 @@ export default function Navbar({ sidebarOpen, setSidebarOpen }) {
                 {notifications.map((notif) => (
                   <div
                     key={notif.id}
-                    className={`p-4 border-b cursor-pointer transition ${
-                      isDark
-                        ? 'border-slate-700 hover:bg-slate-700'
-                        : 'border-gray-100 hover:bg-gray-50'
-                    }`}
+                    className={`p-4 border-b last:border-0 hover:${
+                      isDark ? 'bg-slate-700/50' : 'bg-gray-50'
+                    } transition`}
                   >
-                    <p className="text-sm font-medium">{notif.message}</p>
-                    <p className="text-xs mt-1 text-gray-500">
-                      {notif.time}
-                    </p>
+                    <p className="text-sm font-semibold">{notif.message}</p>
+                    <span className="text-xs text-gray-400">{notif.time}</span>
                   </div>
                 ))}
               </div>
@@ -117,75 +103,57 @@ export default function Navbar({ sidebarOpen, setSidebarOpen }) {
           )}
         </div>
 
-        {/* Theme Toggle */}
-        <button
-          onClick={toggleTheme}
-          className={`p-2 rounded-lg transition ${
-            isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'
-          }`}
-        >
-          {isDark ? (
-            <Sun size={22} className="text-yellow-400" />
-          ) : (
-            <Moon size={22} />
-          )}
-        </button>
-
-        {/* Profile */}
-        <div className="relative">
+        {/* Profile Dropdown Icon Wrapper */}
+        <div className="relative" ref={profileRef}>
           <button
             onClick={() => setProfileOpen(!profileOpen)}
-            className={`flex items-center gap-2 pl-6 border-l ${
-              isDark ? 'border-slate-700' : 'border-gray-200'
-            }`}
+            className="flex items-center gap-3 p-1.5 rounded-xl hover:bg-slate-500/5 transition text-left cursor-pointer"
           >
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-              {user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 text-white font-extrabold flex items-center justify-center shadow-lg transition transform hover:scale-105">
+              {user?.fullName?.charAt(0).toUpperCase() || 'U'}
             </div>
-
-            <div className="hidden sm:block">
-              <p className="text-sm font-semibold">
-                {user?.fullName || 'User'}
+            <div className="hidden md:block">
+              <p className="text-sm font-bold leading-tight">{user?.fullName || 'StockerAI User'}</p>
+              <p className="text-xs text-gray-400 font-semibold leading-none mt-0.5">
+                {user?.email || 'admin@stockerai.com'}
               </p>
             </div>
           </button>
 
           {profileOpen && (
             <div
-              className={`absolute right-0 mt-2 w-64 rounded-xl shadow-2xl border z-50 ${
+              className={`absolute right-0 mt-3 w-64 rounded-2xl shadow-2xl border z-50 animate-scale-up py-2 ${
                 isDark
-                  ? 'bg-slate-800 border-slate-700'
-                  : 'bg-white border-gray-200'
+                  ? 'bg-slate-800 border-slate-700 text-white'
+                  : 'bg-white border-gray-200 text-gray-850'
               }`}
             >
-              {/* Profile Info */}
-              <div className="p-6 border-b">
-                <p className="font-bold">{user?.fullName}</p>
-                <p className="text-xs text-gray-500">
-                  {user?.email}
-                </p>
+              <div className={`px-4 py-3 border-b ${isDark ? 'border-slate-700' : 'border-gray-100'}`}>
+                <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">Signed In As</p>
+                <p className="font-bold text-sm truncate mt-1">{user?.fullName || 'Administrator'}</p>
+                <p className="text-xs text-gray-400 truncate">{user?.email}</p>
               </div>
 
-              {/* Links */}
-              <div className="p-2">
+              <div className="py-1">
                 <Link
-                  to="/profile"
+                  to="/settings"
                   onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 text-sm"
+                  className={`flex items-center gap-3 px-4 py-2.5 text-sm transition ${
+                    isDark ? 'hover:bg-slate-700 text-slate-200' : 'hover:bg-gray-50 text-gray-700'
+                  }`}
                 >
-                  <User size={18} />
-                  My Profile
+                  <Settings size={18} className="text-gray-400" />
+                  Account Settings
                 </Link>
               </div>
 
-              {/* Logout */}
-              <div className="p-2 border-t">
+              <div className={`border-t py-1 ${isDark ? 'border-slate-700' : 'border-gray-100'}`}>
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-3 w-full px-4 py-3 text-red-600 rounded-lg hover:bg-red-100 text-sm"
+                  className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition text-left font-bold"
                 >
                   <LogOut size={18} />
-                  Logout
+                  Log Out
                 </button>
               </div>
             </div>

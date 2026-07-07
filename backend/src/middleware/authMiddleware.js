@@ -1,10 +1,6 @@
-import User from '../models/User.js';
+const User = require('../models/User');
 
-// ==========================================
-// isAuthenticated Middleware
-// Check if user is logged in
-// ==========================================
-export const isAuthenticated = (req, res, next) => {
+const isAuthenticated = (req, res, next) => {
   if (req.isAuthenticated && req.user) {
     return next();
   }
@@ -15,16 +11,11 @@ export const isAuthenticated = (req, res, next) => {
   });
 };
 
-// ==========================================
-// checkPermission Middleware
-// Check if user has required permission
-// ==========================================
-export const checkPermission = (permission) => {
+const checkPermission = (permission) => {
   return async (req, res, next) => {
     try {
       const user = await User.findById(req.user._id);
 
-      // Define permissions based on user role
       const permissions = {
         admin: [
           'canManageProducts',
@@ -42,7 +33,6 @@ export const checkPermission = (permission) => {
         user: ['canViewProducts', 'canCreateOrders'],
       };
 
-      // Check if user has permission
       if (permissions[user.role]?.includes(permission)) {
         return next();
       }
@@ -57,13 +47,9 @@ export const checkPermission = (permission) => {
   };
 };
 
-// ==========================================
-// Error Handler Middleware
-// ==========================================
-export const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res, next) => {
   console.error('Error:', err);
 
-  // Mongoose Validation Error
   if (err.name === 'ValidationError') {
     return res.status(400).json({
       success: false,
@@ -72,7 +58,6 @@ export const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // Mongoose Duplicate Key Error
   if (err.code === 11000) {
     const field = Object.keys(err.keyPattern)[0];
     return res.status(400).json({
@@ -81,7 +66,6 @@ export const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // JWT Errors
   if (err.name === 'JsonWebTokenError') {
     return res.status(401).json({
       success: false,
@@ -89,11 +73,14 @@ export const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // Default error
   res.status(err.statusCode || 500).json({
     success: false,
     message: err.message || 'Internal Server Error',
   });
 };
 
-export default isAuthenticated;
+module.exports = {
+  isAuthenticated,
+  checkPermission,
+  errorHandler,
+};

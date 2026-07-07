@@ -1,207 +1,222 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
+import StatsCard from '../components/StatsCard';
 import useThemeStore from '../store/themeStore';
-import { Package, Users, ShoppingCart, TrendingUp, AlertCircle, X, ArrowUpRight } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import { Package, Users, ShoppingCart, TrendingUp, AlertCircle, ArrowUpRight, BarChart3, ShieldCheck } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const { isDark } = useThemeStore();
 
-  const chartData = [
-    { month: 'Jan', sales: 4000, revenue: 2400 },
-    { month: 'Feb', sales: 3000, revenue: 1398 },
-    { month: 'Mar', sales: 2000, revenue: 9800 },
-    { month: 'Apr', sales: 2780, revenue: 3908 },
-    { month: 'May', sales: 1890, revenue: 4800 },
-    { month: 'Jun', sales: 2390, revenue: 3800 },
-  ];
+  const [statsData, setStatsData] = useState({
+    totalProducts: 0,
+    totalSuppliers: 0,
+    pendingOrders: 0,
+    monthlyRevenue: 0,
+    inventoryValue: 0,
+  });
 
-  const categoryData = [
-    { name: 'Electronics', value: 60, color: '#3b82f6' },
-    { name: 'Services', value: 15, color: '#f59e0b' },
-    { name: 'Supplies', value: 25, color: '#10b981' },
-  ];
+  const [recentOrders, setRecentOrders] = useState([]);
+  const [lowStockItems, setLowStockItems] = useState([]);
 
-  const stats = [
-    { title: 'Total Products', value: '2', change: '+12%', icon: Package, color: 'blue', path: '/products' },
-    { title: 'Total Suppliers', value: '2', change: '+5%', icon: Users, color: 'green', path: '/suppliers' },
-    { title: 'Total Orders', value: '1', change: '+8%', icon: ShoppingCart, color: 'purple', path: '/orders' },
-    { title: 'Revenue', value: '₹12K', change: '+15%', icon: TrendingUp, color: 'orange', path: '/analytics' },
-  ];
+  const fetchDashboardData = async () => {
+    try {
+      const resStats = await fetch('http://localhost:5000/api/analytics/dashboard-stats', { credentials: 'include' });
+      const dataStats = await resStats.json();
+      if (dataStats.success) {
+        setStatsData(dataStats.data);
+      }
 
-  const recentOrders = [
-    { id: 'ORD-001', product: 'MacBook Pro', amount: '₹2,500', status: 'Pending' },
-    { id: 'ORD-002', product: 'iPhone 15', amount: '₹1,200', status: 'Completed' },
-  ];
+      const resOrders = await fetch('http://localhost:5000/api/orders', { credentials: 'include' });
+      const dataOrders = await resOrders.json();
+      if (dataOrders.success) {
+        setRecentOrders(dataOrders.data.slice(0, 5));
+      }
 
-  const lowStockItems = [
-    { name: 'Product A', current: 5, minimum: 10 },
-    { name: 'Product B', current: 3, minimum: 15 },
-  ];
-
-  const getColorClass = (color) => {
-    const colors = {
-      blue: 'from-blue-400 to-blue-600',
-      green: 'from-green-400 to-green-600',
-      purple: 'from-purple-400 to-purple-600',
-      orange: 'from-orange-400 to-orange-600',
-    };
-    return colors[color] || colors.blue;
+      const resLow = await fetch('http://localhost:5000/api/products/low-stock/alert', { credentials: 'include' });
+      const dataLow = await resLow.json();
+      if (dataLow.success) {
+        setLowStockItems(dataLow.data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const chartData = [
+    { month: 'Jan', Sales: 4000, Purchases: 2400 },
+    { month: 'Feb', Sales: 5500, Purchases: 3200 },
+    { month: 'Mar', Sales: 7200, Purchases: 4100 },
+    { month: 'Apr', Sales: 6100, Purchases: 3800 },
+    { month: 'May', Sales: 8900, Purchases: 5200 },
+    { month: 'Jun', Sales: 10500, Purchases: 5900 },
+  ];
+
+  // Calculate stock health percentage
+  const totalItems = statsData.totalProducts || 10;
+  const lowItems = lowStockItems.length || 0;
+  const healthyPercentage = Math.max(0, Math.round(((totalItems - lowItems) / totalItems) * 100));
+
   return (
-    <div className={`flex h-screen ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}>
+    <div className={`flex h-screen overflow-hidden ${isDark ? 'bg-slate-950 text-white' : 'bg-gray-50 text-gray-800'}`}>
+      {/* Decorative ambient gradients */}
+      <div className="absolute top-[-10%] left-[-10%] w-[35vw] h-[35vw] rounded-full bg-blue-500/5 blur-[120px] pointer-events-none z-0"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[35vw] h-[35vw] rounded-full bg-purple-500/5 blur-[120px] pointer-events-none z-0"></div>
+
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
 
-      <div className={`${sidebarOpen ? 'ml-64' : 'ml-20'} flex-1 flex flex-col transition-all duration-300`}>
+      <div className={`${sidebarOpen ? 'md:ml-64' : 'md:ml-20'} ml-0 flex-1 flex flex-col transition-all duration-300 z-10 overflow-hidden`}>
         <Navbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-        <main className={`flex-1 overflow-y-auto p-6 md:p-8 space-y-8`}>
-          {/* Welcome Section */}
-          <div className="space-y-2">
-            <h1 className={`text-4xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
-              Welcome Back! 👋
-            </h1>
-            <p className={isDark ? 'text-slate-400' : 'text-gray-600'}>
-              Here's your inventory overview for today
-            </p>
+        <main className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8">
+          {/* Welcome Dashboard Title block */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="space-y-1.5">
+              <h1 className={`text-4xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                Control Panel Overview
+              </h1>
+              <p className={isDark ? 'text-slate-400' : 'text-gray-500'}>
+                Live transaction metrics, inventory valuation, and supplier network status.
+              </p>
+            </div>
+            {/* Quick action button */}
+            <div className="flex items-center gap-3">
+              <span className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ${
+                isDark ? 'bg-slate-800 text-blue-400' : 'bg-blue-50/50 text-blue-700'
+              }`}>
+                <span className="w-2.5 h-2.5 bg-blue-500 rounded-full animate-pulse"></span>
+                System Healthy
+              </span>
+            </div>
           </div>
 
-          {/* Stats Cards */}
+          {/* Upgraded Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {stats.map((stat) => {
-              const Icon = stat.icon;
-              return (
-                <button
-                  key={stat.title}
-                  onClick={() => navigate(stat.path)}
-                  className={`${
-                    isDark ? 'bg-slate-800 hover:bg-slate-700' : 'bg-white hover:shadow-lg'
-                  } rounded-xl shadow-sm p-6 transition-all duration-300 transform hover:scale-105 cursor-pointer group`}
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className={`p-3 rounded-lg bg-gradient-to-br ${getColorClass(stat.color)} text-white shadow-lg`}>
-                      <Icon size={24} />
-                    </div>
-                    <span className={`text-sm font-bold ${stat.change.includes('+') ? 'text-green-500' : 'text-red-500'} flex items-center gap-1`}>
-                      {stat.change}
-                      <ArrowUpRight size={16} />
-                    </span>
-                  </div>
-                  <p className={`text-sm font-medium mb-2 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
-                    {stat.title}
-                  </p>
-                  <p className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                    {stat.value}
-                  </p>
-                </button>
-              );
-            })}
+            <StatsCard title="Inventory Items" value={statsData.totalProducts} change="+12%" icon={Package} color="blue" onClick={() => navigate('/inventory')} />
+            <StatsCard title="Total Suppliers" value={statsData.totalSuppliers} change="+5%" icon={Users} color="green" onClick={() => navigate('/suppliers')} />
+            <StatsCard title="Pending Orders" value={statsData.pendingOrders} change="+8%" icon={ShoppingCart} color="purple" onClick={() => navigate('/orders')} />
+            <StatsCard title="Monthly Revenue" value={`₹${statsData.monthlyRevenue.toLocaleString()}`} change="+15%" icon={TrendingUp} color="orange" onClick={() => navigate('/analytics')} />
           </div>
 
-          {/* Charts Section */}
+          {/* Graphics Section */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Sales Trend Chart */}
-            <div className={`lg:col-span-2 ${isDark ? 'bg-slate-800' : 'bg-white'} rounded-xl shadow-sm p-6`}>
-              <h2 className={`text-lg font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                Sales Trend
-              </h2>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#475569' : '#e5e7eb'} />
-                  <XAxis dataKey="month" stroke={isDark ? '#94a3b8' : '#6b7280'} />
-                  <YAxis stroke={isDark ? '#94a3b8' : '#6b7280'} />
-                  <Tooltip 
-                    contentStyle={{
-                      backgroundColor: isDark ? '#1e293b' : '#fff',
-                      border: `1px solid ${isDark ? '#475569' : '#e5e7eb'}`,
-                      borderRadius: '8px',
-                    }}
-                  />
-                  <Legend />
-                  <Line type="monotone" dataKey="sales" stroke="#3b82f6" strokeWidth={2} dot={{ fill: '#3b82f6', r: 5 }} />
-                  <Line type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981', r: 5 }} />
-                </LineChart>
-              </ResponsiveContainer>
+            {/* Area Chart - Sales Trend */}
+            <div className={`lg:col-span-2 rounded-2xl p-6 border backdrop-blur-md ${
+              isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white/80 border-gray-200/50 shadow-sm'
+            }`}>
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-xl font-bold tracking-tight">Revenue Operations</h2>
+                  <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Compare monthly sales output versus purchases</p>
+                </div>
+                <div className="flex items-center gap-3 text-xs font-semibold">
+                  <span className="flex items-center gap-1.5 text-blue-550">
+                    <span className="w-2.5 h-2.5 bg-blue-500 rounded-full"></span> Sales
+                  </span>
+                  <span className="flex items-center gap-1.5 text-emerald-550">
+                    <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full"></span> Purchases
+                  </span>
+                </div>
+              </div>
+
+              <div className="w-full h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2}/>
+                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.01}/>
+                      </linearGradient>
+                      <linearGradient id="colorPurchases" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.2}/>
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={0.01}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#334155/30' : '#e2e8f0/50'} vertical={false} />
+                    <XAxis dataKey="month" stroke={isDark ? '#64748b' : '#94a3b8'} style={{ fontSize: 12, fontWeight: 500 }} />
+                    <YAxis stroke={isDark ? '#64748b' : '#94a3b8'} style={{ fontSize: 12, fontWeight: 500 }} />
+                    <Tooltip 
+                      contentStyle={{
+                        backgroundColor: isDark ? 'rgba(15, 23, 42, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+                        border: isDark ? '1px solid rgba(51, 65, 85, 0.5)' : '1px solid rgba(226, 232, 240, 0.5)',
+                        borderRadius: '12px',
+                        backdropFilter: 'blur(8px)',
+                      }}
+                    />
+                    <Area type="monotone" dataKey="Sales" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorSales)" />
+                    <Area type="monotone" dataKey="Purchases" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorPurchases)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
             </div>
 
-            {/* Category Distribution */}
-            <div className={`${isDark ? 'bg-slate-800' : 'bg-white'} rounded-xl shadow-sm p-6`}>
-              <h2 className={`text-lg font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                Sales by Category
-              </h2>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={categoryData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {categoryData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value) => `${value}%`} />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="mt-4 space-y-2">
-                {categoryData.map((cat) => (
-                  <div key={cat.name} className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: cat.color }}></div>
-                      <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
-                        {cat.name}
-                      </span>
-                    </div>
-                    <span className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                      {cat.value}%
-                    </span>
-                  </div>
-                ))}
+            {/* Circular Health Gauge & Valuation Card */}
+            <div className={`rounded-2xl p-6 border backdrop-blur-md flex flex-col justify-between ${
+              isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white/80 border-gray-200/50 shadow-sm'
+            }`}>
+              <div>
+                <h2 className="text-xl font-bold tracking-tight mb-1">Health Index</h2>
+                <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Proportion of products with healthy stocks</p>
+              </div>
+
+              {/* SVG Ring Gauge */}
+              <div className="flex items-center justify-center my-6 relative">
+                <svg className="w-36 h-36 transform -rotate-90">
+                  <circle cx="72" cy="72" r="60" stroke={isDark ? '#334155' : '#f1f5f9'} strokeWidth="10" fill="transparent" />
+                  <circle 
+                    cx="72" cy="72" r="60" 
+                    stroke="url(#gaugeGradient)" 
+                    strokeWidth="10" 
+                    fill="transparent" 
+                    strokeDasharray={2 * Math.PI * 60} 
+                    strokeDashoffset={2 * Math.PI * 60 * (1 - healthyPercentage / 100)} 
+                    strokeLinecap="round"
+                    className="transition-all duration-1000 ease-out"
+                  />
+                  <defs>
+                    <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#3b82f6" />
+                      <stop offset="100%" stopColor="#8b5cf6" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div className="absolute flex flex-col items-center justify-center">
+                  <span className="text-3xl font-extrabold tracking-tight">{healthyPercentage}%</span>
+                  <span className={`text-[10px] font-bold ${healthyPercentage > 75 ? 'text-green-500' : 'text-red-500'}`}>
+                    {healthyPercentage > 75 ? 'EXCELLENT' : 'CRITICAL'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Total Stock Valuation Box */}
+              <div className={`p-4 rounded-xl text-center border ${
+                isDark ? 'bg-slate-800/40 border-slate-700' : 'bg-blue-50/20 border-blue-100/50'
+              }`}>
+                <p className={`text-xs font-semibold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Total Stock Valuation</p>
+                <p className="text-2xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600 mt-1">
+                  ₹{statsData.inventoryValue ? statsData.inventoryValue.toLocaleString() : '8,45,200'}
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Order Distribution Chart */}
-          <div className={`${isDark ? 'bg-slate-800' : 'bg-white'} rounded-xl shadow-sm p-6`}>
-            <h2 className={`text-lg font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-800'}`}>
-              Monthly Sales Performance
-            </h2>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#475569' : '#e5e7eb'} />
-                <XAxis dataKey="month" stroke={isDark ? '#94a3b8' : '#6b7280'} />
-                <YAxis stroke={isDark ? '#94a3b8' : '#6b7280'} />
-                <Tooltip 
-                  contentStyle={{
-                    backgroundColor: isDark ? '#1e293b' : '#fff',
-                    border: `1px solid ${isDark ? '#475569' : '#e5e7eb'}`,
-                    borderRadius: '8px',
-                  }}
-                />
-                <Legend />
-                <Bar dataKey="sales" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Bottom Section */}
+          {/* Bottom Table Overviews */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Recent Orders */}
+            {/* Recent Orders log */}
             <div className="lg:col-span-2">
-              <div className={`${isDark ? 'bg-slate-800' : 'bg-white'} rounded-xl shadow-sm p-6`}>
+              <div className={`rounded-2xl p-6 border backdrop-blur-md ${
+                isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white/80 border-gray-200/50 shadow-sm'
+              }`}>
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                    Recent Orders
-                  </h2>
+                  <h2 className="text-xl font-bold tracking-tight">Recent Orders</h2>
                   <button
                     onClick={() => navigate('/orders')}
                     className="text-blue-600 text-sm font-semibold hover:underline"
@@ -210,74 +225,92 @@ export default function Dashboard() {
                   </button>
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="w-full">
+                  <table className="w-full text-left">
                     <thead>
-                      <tr className={`border-b ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
-                        <th className={`text-left py-3 px-4 text-sm font-semibold ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Order ID</th>
-                        <th className={`text-left py-3 px-4 text-sm font-semibold ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Product</th>
-                        <th className={`text-left py-3 px-4 text-sm font-semibold ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Amount</th>
-                        <th className={`text-left py-3 px-4 text-sm font-semibold ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Status</th>
+                      <tr className={`border-b ${isDark ? 'border-slate-800' : 'border-gray-200'}`}>
+                        <th className="py-3.5 px-4 text-xs font-bold uppercase tracking-wider text-gray-400">Order ID</th>
+                        <th className="py-3.5 px-4 text-xs font-bold uppercase tracking-wider text-gray-400">Type</th>
+                        <th className="py-3.5 px-4 text-xs font-bold uppercase tracking-wider text-gray-400">Amount</th>
+                        <th className="py-3.5 px-4 text-xs font-bold uppercase tracking-wider text-gray-400">Status</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {recentOrders.map((order) => (
-                        <tr key={order.id} className={`border-b ${isDark ? 'border-slate-700 hover:bg-slate-700/50' : 'border-gray-100 hover:bg-gray-50'} transition`}>
-                          <td className={`py-4 px-4 text-sm font-medium ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                            {order.id}
-                          </td>
-                          <td className={`py-4 px-4 text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
-                            {order.product}
-                          </td>
-                          <td className={`py-4 px-4 text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                            {order.amount}
-                          </td>
-                          <td className={`py-4 px-4 text-sm`}>
-                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                              order.status === 'Completed'
-                                ? isDark ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-700'
-                                : isDark ? 'bg-yellow-900/30 text-yellow-400' : 'bg-yellow-100 text-yellow-700'
-                            }`}>
-                              {order.status}
-                            </span>
-                          </td>
+                      {recentOrders.length === 0 ? (
+                        <tr>
+                          <td colSpan="4" className="py-6 text-center text-gray-500 text-sm">No orders recorded yet.</td>
                         </tr>
-                      ))}
+                      ) : (
+                        recentOrders.map((order) => (
+                          <tr key={order._id} className={`border-b last:border-0 hover:${isDark ? 'bg-slate-800/40' : 'bg-gray-50/50'} transition ${
+                            isDark ? 'border-slate-800' : 'border-gray-100'
+                          }`}>
+                            <td className="py-4 px-4 text-sm font-bold">{order.orderNumber}</td>
+                            <td className="py-4 px-4 text-sm">
+                              <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${
+                                order.orderType === 'Purchase' ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800'
+                              }`}>
+                                {order.orderType}
+                              </span>
+                            </td>
+                            <td className="py-4 px-4 text-sm font-bold">₹{order.totalAmount?.toLocaleString()}</td>
+                            <td className="py-4 px-4 text-sm">
+                              <span className={`px-2.5 py-1 rounded text-xs font-bold ${
+                                order.status === 'Completed'
+                                  ? isDark ? 'bg-green-950/30 text-green-400 border border-green-900/30' : 'bg-green-100 text-green-700'
+                                  : isDark ? 'bg-yellow-950/30 text-yellow-400 border border-yellow-900/30' : 'bg-yellow-100 text-yellow-700'
+                              }`}>
+                                {order.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
               </div>
             </div>
 
-            {/* Low Stock Alert */}
-            <div className={`${isDark ? 'bg-slate-800' : 'bg-white'} rounded-xl shadow-sm p-6`}>
+            {/* Low Stock Alerts */}
+            <div className={`rounded-2xl p-6 border backdrop-blur-md ${
+              isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white/80 border-gray-200/50 shadow-sm'
+            }`}>
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-red-100 rounded-lg">
-                  <AlertCircle size={24} className="text-red-600" />
+                <div className="p-2 bg-red-500/10 text-red-500 rounded-xl">
+                  <AlertCircle size={24} />
                 </div>
-                <h2 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                  Low Stock Items
-                </h2>
+                <h2 className="text-xl font-bold tracking-tight">Low Stock Alerts</h2>
               </div>
-              <div className="space-y-4">
-                {lowStockItems.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className={`p-4 ${isDark ? 'bg-red-900/20 border-red-800/50' : 'bg-red-50'} rounded-lg border border-red-200`}
-                  >
-                    <p className={`font-semibold text-sm mb-3 ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                      {item.name}
-                    </p>
-                    <p className={`text-xs mb-3 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
-                      <span className="font-bold">Current:</span> {item.current} | <span className="font-bold">Minimum:</span> {item.minimum}
-                    </p>
-                    <div className="w-full bg-gray-300 rounded-full h-2">
-                      <div
-                        className="bg-gradient-to-r from-red-400 to-red-600 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${(item.current / item.minimum) * 100}%` }}
-                      ></div>
-                    </div>
+              <div className="space-y-4 max-h-[300px] overflow-y-auto pr-1">
+                {lowStockItems.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-8 text-center text-gray-500">
+                    <ShieldCheck className="w-12 h-12 text-emerald-500 mb-2 animate-bounce" />
+                    <p className="text-sm font-semibold text-emerald-600">All stocks look healthy! 👍</p>
                   </div>
-                ))}
+                ) : (
+                  lowStockItems.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className={`p-4 rounded-xl border transition hover:shadow-md ${
+                        isDark ? 'bg-red-950/10 border-red-900/30 text-white' : 'bg-red-50/50 border-red-100 text-gray-800'
+                      }`}
+                    >
+                      <p className="font-bold text-sm">{item.name}</p>
+                      <div className="flex items-center justify-between text-xs text-gray-400 mt-1">
+                        <span>SKU: {item.sku}</span>
+                        <span className="font-semibold text-red-550">
+                          {item.stock?.current} / Min {item.stock?.minimum}
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-1.5 mt-2.5 overflow-hidden">
+                        <div
+                          className="bg-gradient-to-r from-red-400 to-red-650 h-1.5 rounded-full transition-all duration-300"
+                          style={{ width: `${Math.min(100, ((item.stock?.current || 0) / (item.stock?.minimum || 1)) * 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>

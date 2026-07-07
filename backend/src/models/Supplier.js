@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const supplierSchema = new mongoose.Schema(
   {
@@ -143,11 +143,9 @@ const supplierSchema = new mongoose.Schema(
   }
 );
 
-// Index for search
 supplierSchema.index({ name: 'text', code: 'text', email: 'text' });
 supplierSchema.index({ isActive: 1 });
 
-// Method to update rating
 supplierSchema.methods.updateRating = function () {
   if (this.reviews.length === 0) {
     this.rating = 0;
@@ -160,4 +158,4 @@ supplierSchema.methods.updateRating = function () {
 
 const Supplier = mongoose.model('Supplier', supplierSchema);
 
-export default Supplier;
+module.exports = Supplier;

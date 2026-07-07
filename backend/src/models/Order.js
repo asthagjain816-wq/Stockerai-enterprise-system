@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema(
   {
@@ -7,19 +7,16 @@ const orderSchema = new mongoose.Schema(
       required: [true, 'Please provide order number'],
       unique: true,
     },
-
     orderType: {
       type: String,
       enum: ['Purchase', 'Sales'],
       default: 'Purchase',
     },
-
     supplier: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Supplier',
-      required: false,  // Optional
+      required: false,
     },
-
     items: [
       {
         product: {
@@ -37,41 +34,35 @@ const orderSchema = new mongoose.Schema(
         },
         total: {
           type: Number,
-          required: false,  // ✅ Optional
+          required: false,
         },
         unitPrice: {
           type: Number,
-          required: false,  // ✅ Optional
+          required: false,
         },
       },
     ],
-
     totalAmount: {
       type: Number,
       default: 0,
     },
-
     status: {
       type: String,
       enum: ['Pending', 'Processing', 'Submitted', 'Completed', 'Cancelled'],
       default: 'Pending',
     },
-
     orderDate: {
       type: Date,
       default: Date.now,
     },
-
     expectedDelivery: {
       type: Date,
     },
-
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-
     isActive: {
       type: Boolean,
       default: true,
@@ -84,4 +75,4 @@ const orderSchema = new mongoose.Schema(
 
 const Order = mongoose.model('Order', orderSchema);
 
-export default Order;
+module.exports = Order;
