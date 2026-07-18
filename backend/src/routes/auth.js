@@ -50,33 +50,33 @@ passport.use(
       try {
         const email = profile.emails?.[0]?.value;
 
-// 1️⃣ Check by googleId
-let user = await User.findOne({ googleId: profile.id });
+        // 1️⃣ Check by googleId
+        let user = await User.findOne({ googleId: profile.id });
 
-if (user) {
-  return done(null, user);
-}
+        if (user) {
+          return done(null, user);
+        }
 
-// 2️⃣ Check if email already exists
-user = await User.findOne({ email });
+        // 2️⃣ Check if email already exists
+        user = await User.findOne({ email });
 
-if (user) {
-  // 👉 Existing user ko Google se link karo
-  user.googleId = profile.id;
-  await user.save();
+        if (user) {
+          // 👉 Existing user ko Google se link karo
+          user.googleId = profile.id;
+          await user.save();
 
-  return done(null, user);
-}
+          return done(null, user);
+        }
 
-// 3️⃣ New user create karo
-const newUser = await User.create({
-  googleId: profile.id,
-  fullName: profile.displayName,
-  email,
-  password: null,
-});
+        // 3️⃣ New user create karo
+        const newUser = await User.create({
+          googleId: profile.id,
+          fullName: profile.displayName,
+          email,
+          password: null,
+        });
 
-return done(null, newUser);
+        return done(null, newUser);
 
         return done(null, newUser);
       } catch (error) {
@@ -161,6 +161,7 @@ router.post('/register', async (req, res) => {
           id: user._id,
           fullName: user.fullName,
           email: user.email,
+          avatar: user.avatar || null,
         },
       });
     });
@@ -183,6 +184,7 @@ router.post('/login', passport.authenticate('local'), (req, res) => {
         id: req.user._id,
         fullName: req.user.fullName,
         email: req.user.email,
+        avatar: req.user.avatar || null,
       },
     });
   } catch (error) {
@@ -227,8 +229,48 @@ router.get('/me', (req, res) => {
       id: req.user._id,
       fullName: req.user.fullName,
       email: req.user.email,
+      avatar: req.user.avatar || null,
     },
   });
+});
+
+// Update Profile
+router.put('/profile', async (req, res, next) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ success: false, message: 'Not authenticated' });
+  }
+  try {
+    const { fullName, email, avatar, password } = req.body;
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    if (fullName) user.fullName = fullName;
+    if (email) user.email = email;
+    if (avatar !== undefined) user.avatar = avatar;
+    if (password) {
+      user.password = password;
+    }
+    await user.save();
+
+    // Sync session details
+    req.user.fullName = user.fullName;
+    req.user.email = user.email;
+    req.user.avatar = user.avatar || null;
+
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        avatar: user.avatar || null
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // Logout

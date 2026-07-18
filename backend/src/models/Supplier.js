@@ -62,6 +62,15 @@ const supplierSchema = new mongoose.Schema(
       max: 5,
       default: 0,
     },
+    outstandingBalance: {
+      type: Number,
+      default: 0,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ['Paid', 'Pending', 'Overdue'],
+      default: 'Paid',
+    },
     reviews: [
       {
         user: {
