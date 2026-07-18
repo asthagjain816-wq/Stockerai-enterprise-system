@@ -88,6 +88,7 @@ const useAuthStore = create((set) => ({
   },
 
   clearError: () => set({ error: null }),
+  updateUser: (updatedUser) => set((state) => ({ user: { ...state.user, ...updatedUser } })),
 }));
 
 export default useAuthStore;

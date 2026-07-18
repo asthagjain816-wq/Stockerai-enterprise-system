@@ -14,11 +14,15 @@ export default {
           200: '#e2e8f0',
           300: '#cbd5e1',
           400: '#94a3b8',
+          505: '#78889b',
           500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
+          600: '#3F4C68', // disabled / text muted
+          700: '#2B354C', // border dark secondary
+          800: '#1C2336', // border dark base
+          850: '#151B2A', // widget inner/timeline containers
+          900: '#101420', // cards/nav background
+          950: '#0A0D14', // dashboard body background
+          955: '#0A0D14', // matching custom deep background
         },
       },
     },

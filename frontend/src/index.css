@@ -8,13 +8,17 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html, body, #root {
   width: 100%;
   height: 100%;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -71,3 +75,603 @@ code {
 .animate-slide-up {
   animation: slideUp 0.3s ease-out forwards;
 }
+
+@keyframes slideLeft {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.animate-slide-left {
+  animation: slideLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Print Media Stylesheet */
+@media print {
+  aside, 
+  nav, 
+  button, 
+  select, 
+  input, 
+  .pagination-controls, 
+  .floating-action-button,
+  .print\:hidden {
+    display: none !important;
+  }
+  body, main, #root {
+    background: white !important;
+    color: black !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .md\:ml-64, .md\:ml-20 {
+    margin-left: 0 !important;
+  }
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+  th, td {
+    border: 1px solid #e2e8f0 !important;
+    padding: 8px !important;
+    color: black !important;
+  }
+}
+
+/* ==========================================
+   Premium Dark Theme Redesign Enhancements
+   ========================================== */
+.dark, .dark body, .dark #root {
+  background-color: #0A0D14 !important;
+  color: #F3F4F6 !important;
+}
+
+/* Scrollbar dark theme override */
+.dark ::-webkit-scrollbar-track {
+  background: #0A0D14 !important;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #1C2336 !important;
+  border-radius: 9999px !important;
+  border: 2px solid #0A0D14 !important;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #2B354C !important;
+}
+
+/* Glassmorphic Cards & Elevated Surfaces */
+.dark .bg-slate-900,
+.dark .bg-slate-900\/50,
+.dark .bg-slate-900\/60,
+.dark .bg-slate-900\/70,
+.dark .bg-slate-900\/80 {
+  background-color: rgba(16, 20, 32, 0.75) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.dark .bg-slate-900:hover {
+  border-color: rgba(59, 130, 246, 0.45) !important;
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6), 0 0 20px rgba(59, 130, 246, 0.15) !important;
+}
+
+/* Base Modal elevated style */
+.dark .shadow-2xl,
+.dark div[class*="rounded-2xl"][class*="shadow-2xl"] {
+  background-color: #101420 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Sub-cards and elevated surfaces (like widgets, timelines, lists) */
+.dark .bg-slate-800,
+.dark .bg-slate-850,
+.dark .bg-slate-800\/70 {
+  background-color: rgba(21, 27, 42, 0.65) !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Active elements / Selected cards blue glow */
+.dark .border-blue-500,
+.dark .ring-2.ring-blue-500\/25,
+.dark .shadow-blue-500\/10 {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 22px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  background-color: rgba(21, 27, 42, 0.85) !important;
+}
+
+/* ==========================================
+   Premium Table Styles in Dark Mode
+   ========================================== */
+.dark table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  width: 100% !important;
+}
+
+.dark thead tr {
+  background-color: rgba(17, 24, 39, 0.8) !important;
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark th {
+  color: #94a3b8 !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  padding: 12px 20px !important;
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark tbody tr {
+  background-color: transparent !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Alternate row styling */
+.dark tbody tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.015) !important;
+}
+
+/* Hover highlights */
+.dark tbody tr:hover,
+.dark tr[class*="hover:bg-slate-50"]:hover,
+.dark tr[class*="hover:bg-slate-800"]:hover {
+  background-color: rgba(255, 255, 255, 0.045) !important;
+}
+
+/* Clean borders */
+.dark td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  padding: 14px 20px !important;
+  color: #e2e8f0 !important;
+  font-size: 0.825rem !important;
+}
+
+.dark tr:last-child td {
+  border-bottom: none !important;
+}
+
+/* ==========================================
+   Buttons and Indicators
+   ========================================== */
+/* Gradient Primary Buttons & Hover Lift */
+.dark button.bg-blue-600,
+.dark button.bg-blue-605,
+.dark button[class*="bg-blue-600"],
+.dark a[class*="bg-blue-600"],
+.dark div[class*="bg-blue-600"] {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.dark button.bg-blue-600:hover,
+.dark button.bg-blue-605:hover,
+.dark button[class*="bg-blue-600"]:hover,
+.dark a[class*="bg-blue-600"]:hover {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4) !important;
+  transform: translateY(-1px) !important;
+}
+
+.dark button:active {
+  transform: translateY(0.5px) !important;
+}
+
+/* State buttons: success, warning, danger */
+.dark .bg-emerald-600,
+.dark .bg-emerald-500 {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark .bg-emerald-600:hover,
+.dark .bg-emerald-500:hover {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35) !important;
+  transform: translateY(-1px) !important;
+}
+
+.dark .bg-amber-500,
+.dark .bg-orange-500,
+.dark .bg-orange-600 {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark .bg-amber-500:hover,
+.dark .bg-orange-500:hover,
+.dark .bg-orange-600:hover {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.35) !important;
+  transform: translateY(-1px) !important;
+}
+
+.dark .bg-red-500,
+.dark .bg-red-600 {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark .bg-red-500:hover,
+.dark .bg-red-600:hover {
+  background: linear-gradient(135deg, #f87171 0%, #ef4444 100%) !important;
+  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.35) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Translucent state badges in dark mode */
+.dark .bg-emerald-50,
+.dark .bg-emerald-950\/20 {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.2) !important;
+}
+
+.dark .bg-amber-50,
+.dark .bg-amber-955\/20,
+.dark .bg-orange-950\/20 {
+  background-color: rgba(245, 158, 11, 0.12) !important;
+  color: #fbbf24 !important;
+  border: 1px solid rgba(245, 158, 11, 0.2) !important;
+}
+
+.dark .bg-red-50,
+.dark .bg-red-950\/20 {
+  background-color: rgba(239, 68, 68, 0.12) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.2) !important;
+}
+
+.dark .bg-blue-50,
+.dark .bg-blue-950\/20 {
+  background-color: rgba(59, 130, 246, 0.12) !important;
+  color: #60a5fa !important;
+  border: 1px solid rgba(59, 130, 246, 0.2) !important;
+}
+
+/* ==========================================
+   Responsive Overrides & Layout Safety
+   ========================================== */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+  main {
+    padding: 0.75rem !important; /* Compacter padding for mobile/tablet screens */
+  }
+  div[class*="gap-"] {
+    gap: 0.75rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Force multi-column layout grids (like forms and stats cards) to stack in single column on mobile */
+  div[class*="grid-cols-2"],
+  div[class*="grid-cols-3"],
+  div[class*="grid-cols-4"],
+  div[class*="grid-cols-5"],
+  div[class*="grid-cols-6"] {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+  }
+  
+  /* Let flex button groups wrap automatically and add gap spacing */
+  div[class*="flex"][class*="gap-"],
+  div[class*="flex"][class*="space-x-"],
+  .flex-wrap-mobile {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  /* Safe margins and widths for tables horizontal scrolls on mobile screens */
+  .overflow-x-auto {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
+
+/* ==========================================
+   Micro Interactions & SaaS Animations
+   ========================================== */
+/* CSS Button Ripple Effect */
+button, a.button, .btn {
+  position: relative;
+  overflow: hidden;
+}
+
+button::after, a.button::after, .btn::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.25);
+  opacity: 0;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  transition: transform 0.5s, opacity 0.8s;
+  pointer-events: none;
+}
+
+button:active::after, a.button:active::after, .btn:active::after {
+  width: 300px;
+  height: 300px;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(0);
+  transition: 0s;
+}
+
+/* Micro-hover lifts */
+.hover-lift {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease !important;
+}
+.hover-lift:hover {
+  transform: translateY(-2px) scale(1.01) !important;
+}
+
+/* Smooth Progress Bar Fill transition */
+div[style*="width:"],
+div[class*="transition-all"] {
+  transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+/* Sticky headers background safety */
+.dark table thead th {
+  background-color: #111827 !important;
+}
+
+/* KPI Cards Interactivity: scale lifts, active click scale, custom ripple feedback */
+.kpi-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.25s, box-shadow 0.25s !important;
+}
+
+.kpi-card::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120px;
+  height: 120px;
+  background: rgba(59, 130, 246, 0.18);
+  opacity: 0;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  transition: transform 0.5s, opacity 0.8s;
+  pointer-events: none;
+}
+
+.kpi-card:active::after {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(4);
+  transition: 0s;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px) scale(1.015) !important;
+}
+
+.kpi-card:active {
+  transform: translateY(1px) scale(0.985) !important;
+}
+
+/* Unified interactive state classes for KPI cards */
+.kpi-card-interactive {
+  position: relative !important;
+  overflow: hidden !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.kpi-card-interactive:hover {
+  transform: translateY(-4px) scale(1.02) !important;
+}
+
+.kpi-card-interactive:active {
+  transform: translateY(-1px) scale(0.98) !important;
+  transition-duration: 0.08s !important;
+}
+
+/* Selected Card blue border and glow */
+.kpi-card-selected {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 15px 2px rgba(59, 130, 246, 0.35) !important;
+  outline: 2px solid rgba(59, 130, 246, 0.4) !important;
+  outline-offset: -2px !important;
+}
+
+.dark .kpi-card-selected {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 20px 4px rgba(59, 130, 246, 0.45) !important;
+}
+
+/* Custom Ripple classes */
+.ripple-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+  z-index: 1;
+}
+
+.ripple-circle {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  background-color: rgba(59, 130, 246, 0.25);
+  animation: ripple-animation 600ms cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+  pointer-events: none;
+}
+.dark .ripple-circle {
+  background-color: rgba(59, 130, 246, 0.35);
+}
+
+@keyframes ripple-animation {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Interactive Enterprise Widget styling */
+.widget-interactive {
+  position: relative !important;
+  overflow: hidden !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.widget-interactive-item {
+  position: relative !important;
+  overflow: hidden !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.widget-interactive-item:hover {
+  transform: translateY(-2px) scale(1.01) !important;
+  box-shadow: 0 4px 12px -2px rgba(59, 130, 246, 0.1), 0 2px 4px -1px rgba(59, 130, 246, 0.06) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+}
+
+.dark .widget-interactive-item:hover {
+  box-shadow: 0 4px 20px -2px rgba(59, 130, 246, 0.25) !important;
+  border-color: rgba(59, 130, 246, 0.5) !important;
+}
+
+.widget-interactive-item:active {
+  transform: translateY(0px) scale(0.99) !important;
+  transition-duration: 0.08s !important;
+}
+
+/* Slide up items animation */
+@keyframes slide-up-item {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up-item {
+  animation: slide-up-item 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ==========================================
+   Global Dark Mode Overrides for UI Elements
+   ========================================== */
+/* Premium dark inputs, selects, and textareas */
+.dark input, 
+.dark select, 
+.dark textarea {
+  background-color: rgba(21, 27, 42, 0.6) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #f3f4f6 !important;
+  transition: all 0.2s ease !important;
+}
+
+.dark input:focus, 
+.dark select:focus, 
+.dark textarea:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Sidebar and Navbar premium contrast details */
+.dark aside,
+.dark .sidebar-container {
+  background-color: #0A0D14 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.dark nav,
+.dark .navbar-container {
+  background-color: rgba(10, 13, 20, 0.85) !important;
+  backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Recharts tooltip premium formatting overrides */
+.dark .recharts-default-tooltip {
+  background-color: rgba(16, 20, 32, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+}
+
+.dark .recharts-tooltip-item {
+  color: #f3f4f6 !important;
+}
+
+/* Custom scrollbar styling for a native SaaS look */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.25);
+  border-radius: 9999px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.4);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Premium micro-interactions */
+.scale-on-hover {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.scale-on-hover:hover {
+  transform: translateY(-1.5px) scale(1.015) !important;
+}
+.scale-on-hover:active {
+  transform: scale(0.985) !important;
+}
+
+/* Global premium table styling definitions */
+.overflow-x-auto table tbody tr {
+  transition: all 0.15s ease-in-out !important;
+}
+.overflow-x-auto table tbody tr:hover {
+  background-color: rgba(37, 99, 235, 0.04) !important;
+}
+.dark .overflow-x-auto table tbody tr:hover {
+  background-color: rgba(37, 99, 235, 0.07) !important;
+}
+.overflow-x-auto table tbody tr:nth-child(even) {
+  background-color: rgba(248, 250, 252, 0.5) !important;
+}
+.dark .overflow-x-auto table tbody tr:nth-child(even) {
+  background-color: rgba(30, 41, 59, 0.18) !important;
+}
