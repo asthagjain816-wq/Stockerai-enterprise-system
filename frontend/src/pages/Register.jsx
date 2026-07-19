@@ -72,7 +72,7 @@ export default function Register() {
 
   const handleGoogleLogin = () => {
     try {
-      window.location.href = 'http://localhost:5000/api/auth/google';
+      window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/google`;
     } catch (error) {
       console.error('Google login error:', error);
       setError('Google login configuration error');

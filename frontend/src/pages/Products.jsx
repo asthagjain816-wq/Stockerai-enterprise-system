@@ -206,7 +206,7 @@ export default function Products() {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/products', { credentials: 'include' });
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`, { credentials: 'include' });
       const data = await res.json();
       if (data.success) {
         setProducts(data.data);
@@ -222,7 +222,7 @@ export default function Products() {
 
   const fetchSuppliers = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/suppliers', { credentials: 'include' });
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/suppliers`, { credentials: 'include' });
       const data = await res.json();
       if (data.success) {
         setSuppliers(data.data);
@@ -350,7 +350,7 @@ export default function Products() {
           body: JSON.stringify(payload)
         });
       } else {
-        res = await fetch('http://localhost:5000/api/products', {
+        res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -618,7 +618,7 @@ export default function Products() {
         };
 
         try {
-          await fetch('http://localhost:5000/api/products', {
+          await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',

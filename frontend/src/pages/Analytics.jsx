@@ -75,28 +75,28 @@ export default function Analytics() {
   const fetchStats = async () => {
     try {
       // 1. Fetch dashboard statistical numeric values
-      const resStats = await fetch('http://localhost:5000/api/analytics/dashboard-stats', { credentials: 'include' });
+      const resStats = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/analytics/dashboard-stats`, { credentials: 'include' });
       const dataStats = await resStats.json();
       if (dataStats.success) {
         setStatsData(dataStats.data);
       }
 
       // 2. Fetch products for report lists
-      const resProducts = await fetch('http://localhost:5000/api/products', { credentials: 'include' });
+      const resProducts = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`, { credentials: 'include' });
       const dataProducts = await resProducts.json();
       if (dataProducts.success) {
         setProducts(dataProducts.data);
       }
 
       // 3. Fetch suppliers for performance
-      const resSuppliers = await fetch('http://localhost:5000/api/suppliers', { credentials: 'include' });
+      const resSuppliers = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/suppliers`, { credentials: 'include' });
       const dataSuppliers = await resSuppliers.json();
       if (dataSuppliers.success) {
         setSuppliers(dataSuppliers.data);
       }
 
       // 4. Fetch orders for order history
-      const resOrders = await fetch('http://localhost:5000/api/orders', { credentials: 'include' });
+      const resOrders = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders`, { credentials: 'include' });
       const dataOrders = await resOrders.json();
       if (dataOrders.success) {
         setOrders(dataOrders.data);

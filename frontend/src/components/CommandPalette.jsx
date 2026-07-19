@@ -27,9 +27,9 @@ export default function CommandPalette({ isOpen, onClose }) {
       const fetchPaletteData = async () => {
         try {
           const [resP, resS, resO] = await Promise.all([
-            fetch('http://localhost:5000/api/products', { credentials: 'include' }).then(r => r.ok ? r.json() : { success: false }),
-            fetch('http://localhost:5000/api/suppliers', { credentials: 'include' }).then(r => r.ok ? r.json() : { success: false }),
-            fetch('http://localhost:5000/api/orders', { credentials: 'include' }).then(r => r.ok ? r.json() : { success: false })
+            fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`, { credentials: 'include' }).then(r => r.ok ? r.json() : { success: false }),
+            fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/suppliers`, { credentials: 'include' }).then(r => r.ok ? r.json() : { success: false }),
+            fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders`, { credentials: 'include' }).then(r => r.ok ? r.json() : { success: false })
           ]);
           setCatalogItems({
             products: resP.success ? resP.data : [],

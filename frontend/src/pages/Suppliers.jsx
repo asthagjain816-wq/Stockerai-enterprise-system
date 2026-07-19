@@ -230,7 +230,7 @@ export default function Suppliers() {
         };
 
         try {
-          await fetch('http://localhost:5000/api/suppliers', {
+          await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/suppliers`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -253,7 +253,7 @@ export default function Suppliers() {
 
   const fetchSuppliers = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/suppliers', { credentials: 'include' });
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/suppliers`, { credentials: 'include' });
       const data = await res.json();
       if (data.success) {
         setSuppliers(data.data);
@@ -270,7 +270,7 @@ export default function Suppliers() {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/products', { credentials: 'include' });
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`, { credentials: 'include' });
       const data = await res.json();
       if (data.success) {
         setProducts(data.data);
@@ -282,7 +282,7 @@ export default function Suppliers() {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/orders', { credentials: 'include' });
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders`, { credentials: 'include' });
       const data = await res.json();
       if (data.success) {
         setOrders(data.data);
@@ -360,7 +360,7 @@ export default function Suppliers() {
           body: JSON.stringify(payload)
         });
       } else {
-        res = await fetch('http://localhost:5000/api/suppliers', {
+        res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/suppliers`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',

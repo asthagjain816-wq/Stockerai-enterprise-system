@@ -75,31 +75,31 @@ export default function Dashboard() {
   // Fetch Dashboard Stats & Primary Collections
   const fetchDashboardData = async () => {
     try {
-      const resStats = await fetch('http://localhost:5000/api/analytics/dashboard-stats', { credentials: 'include' });
+      const resStats = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/analytics/dashboard-stats`, { credentials: 'include' });
       const dataStats = await resStats.json();
       if (dataStats.success) {
         setStatsData(dataStats.data);
       }
 
-      const resProducts = await fetch('http://localhost:5000/api/products', { credentials: 'include' });
+      const resProducts = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`, { credentials: 'include' });
       const dataProducts = await resProducts.json();
       if (dataProducts.success) {
         setProducts(dataProducts.data);
       }
 
-      const resSuppliers = await fetch('http://localhost:5000/api/suppliers', { credentials: 'include' });
+      const resSuppliers = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/suppliers`, { credentials: 'include' });
       const dataSuppliers = await resSuppliers.json();
       if (dataSuppliers.success) {
         setSuppliers(dataSuppliers.data);
       }
 
-      const resOrders = await fetch('http://localhost:5000/api/orders', { credentials: 'include' });
+      const resOrders = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders`, { credentials: 'include' });
       const dataOrders = await resOrders.json();
       if (dataOrders.success) {
         setOrders(dataOrders.data);
       }
 
-      const resLow = await fetch('http://localhost:5000/api/products/low-stock/alert', { credentials: 'include' });
+      const resLow = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products/low-stock/alert`, { credentials: 'include' });
       const dataLow = await resLow.json();
       if (dataLow.success) {
         setLowStockItems(dataLow.data);
