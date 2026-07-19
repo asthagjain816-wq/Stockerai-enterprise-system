@@ -33,12 +33,22 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
     process.exit(1);
   });
 
+// Trust proxy (required for secure cookies behind reverse proxies like Render)
+app.set('trust proxy', 1);
+
+const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
+
 // Session
 app.use(session({
   secret: process.env.SESSION_SECRET || 'my_secret_key',
   resave: false,
   saveUninitialized: false,
-  cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7, sameSite: 'lax' },
+  cookie: { 
+    httpOnly: true, 
+    maxAge: 1000 * 60 * 60 * 24 * 7, 
+    sameSite: isProduction ? 'none' : 'lax',
+    secure: isProduction
+  },
 }));
 
 // Passport

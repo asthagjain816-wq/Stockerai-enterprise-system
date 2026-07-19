@@ -175,25 +175,41 @@ router.post('/register', async (req, res) => {
 });
 
 // Local Login
-router.post('/login', passport.authenticate('local'), (req, res) => {
-  try {
-    return res.status(200).json({
-      success: true,
-      message: 'Login successful',
-      user: {
-        id: req.user._id,
-        fullName: req.user.fullName,
-        email: req.user.email,
-        avatar: req.user.avatar || null,
-      },
+router.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      console.error('Login Error:', err);
+      return res.status(500).json({
+        success: false,
+        message: err.message || 'Login failed',
+      });
+    }
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: info && info.message ? info.message : 'Invalid email or password',
+      });
+    }
+    req.logIn(user, (err) => {
+      if (err) {
+        console.error('Login Session Error:', err);
+        return res.status(500).json({
+          success: false,
+          message: 'Login session failed',
+        });
+      }
+      return res.status(200).json({
+        success: true,
+        message: 'Login successful',
+        user: {
+          id: user._id,
+          fullName: user.fullName,
+          email: user.email,
+          avatar: user.avatar || null,
+        },
+      });
     });
-  } catch (error) {
-    console.error('Login Error:', error);
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Login failed',
-    });
-  }
+  })(req, res, next);
 });
 
 // Google Login Initiate
@@ -249,7 +265,7 @@ router.put('/profile', async (req, res, next) => {
     if (email) user.email = email;
     if (avatar !== undefined) user.avatar = avatar;
     if (password) {
-      user.password = password;
+      user.password = await bcrypt.hash(password, 10);
     }
     await user.save();
 
