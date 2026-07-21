@@ -103,8 +103,18 @@ app.use((err, req, res, next) => {
 
 // Start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
+});
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`❌ Error: Port ${PORT} is already in use by another process.`);
+    console.error(`👉 Solution: Please close the existing backend process running on port ${PORT} or run 'Stop-Process -Id (Get-NetTCPConnection -LocalPort ${PORT}).OwningProcess -Force' in PowerShell.`);
+    process.exit(1);
+  } else {
+    console.error('❌ Server Error:', err);
+  }
 });
 
 module.exports = app;

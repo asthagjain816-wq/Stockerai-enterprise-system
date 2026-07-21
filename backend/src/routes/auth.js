@@ -39,12 +39,19 @@ passport.use(
 // ============================================
 // GOOGLE OAUTH STRATEGY
 // ============================================
+const getCallbackURL = () => {
+  if (process.env.RENDER === 'true') {
+    return process.env.GOOGLE_CALLBACK_URL || 'https://stockerai-backend.onrender.com/api/auth/google/callback';
+  }
+  return process.env.LOCAL_GOOGLE_CALLBACK_URL || 'http://localhost:5000/api/auth/google/callback';
+};
+
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.GOOGLE_CALLBACK_URL || (process.env.BACKEND_URL ? `${process.env.BACKEND_URL}/api/auth/google/callback` : 'https://stockerai-backend.onrender.com/api/auth/google/callback'),
+      callbackURL: getCallbackURL(),
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
