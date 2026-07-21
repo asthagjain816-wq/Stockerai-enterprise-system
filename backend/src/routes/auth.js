@@ -44,7 +44,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: `${process.env.BACKEND_URL}/api/auth/google/callback`,
+      callbackURL: process.env.GOOGLE_CALLBACK_URL || (process.env.BACKEND_URL ? `${process.env.BACKEND_URL}/api/auth/google/callback` : 'https://stockerai-backend.onrender.com/api/auth/google/callback'),
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -75,8 +75,6 @@ passport.use(
           email,
           password: null,
         });
-
-        return done(null, newUser);
 
         return done(null, newUser);
       } catch (error) {
@@ -219,14 +217,16 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 router.get(
   '/google/callback',
   (req, res, next) => {
+    const frontendUrl = process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173';
     passport.authenticate('google', {
-      failureRedirect: `${process.env.FRONTEND_URL}/login`,
+      failureRedirect: `${frontendUrl}/login`,
       session: true,
     })(req, res, next);
   },
   (req, res) => {
+    const frontendUrl = process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173';
     // Successful authentication
-    res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
+    res.redirect(`${frontendUrl}/dashboard`);
   }
 );
 

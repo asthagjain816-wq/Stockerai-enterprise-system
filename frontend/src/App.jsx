@@ -71,7 +71,7 @@ function App() {
           Offline Mode: operating with local fallback cached data.
         </div>
       )}
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <ToastContainer />
         <ConfirmationDialog />
         <GlobalERPController />
