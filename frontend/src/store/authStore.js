@@ -9,22 +9,30 @@ const useAuthStore = create((set) => ({
   loading: true,
   error: null,
 
-  checkAuth: async () => {
+  checkAuth: async (retries = 2) => {
     set({ loading: true, error: null });
-    try {
-      const response = await fetch(`${API_URL}/me`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-      });
-      const data = await response.json();
-      if (data.success) {
-        set({ user: data.user, isAuthenticated: true, loading: false });
-      } else {
-        set({ user: null, isAuthenticated: false, loading: false });
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      try {
+        const response = await fetch(`${API_URL}/me`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+        });
+        const data = await response.json();
+        if (data.success) {
+          set({ user: data.user, isAuthenticated: true, loading: false });
+          return;
+        } else {
+          set({ user: null, isAuthenticated: false, loading: false });
+          return;
+        }
+      } catch (err) {
+        if (attempt < retries) {
+          await new Promise((r) => setTimeout(r, 2500));
+        } else {
+          set({ user: null, isAuthenticated: false, loading: false });
+        }
       }
-    } catch (err) {
-      set({ user: null, isAuthenticated: false, loading: false });
     }
   },
 

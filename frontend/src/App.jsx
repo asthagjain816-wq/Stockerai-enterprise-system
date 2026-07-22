@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import useAuthStore from './store/authStore';
 import useThemeStore from './store/themeStore';
 import ProtectedRoute from './routes/ProtectedRoute';
+import { getApiBaseUrl } from './config/apiConfig';
 
 // Import Pages
 import Login from './pages/Login';
@@ -39,6 +40,14 @@ function App() {
     if (checkAuth) {
       checkAuth();
     }
+    const pingBackend = async () => {
+      try {
+        await fetch(`${getApiBaseUrl()}/api/health`);
+      } catch (e) {}
+    };
+    pingBackend();
+    const interval = setInterval(pingBackend, 3 * 60 * 1000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
