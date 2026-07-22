@@ -51,8 +51,8 @@ passport.use(
 // GOOGLE OAUTH STRATEGY
 // ============================================
 const getCallbackURL = () => {
-  if (process.env.RENDER === 'true') {
-    return process.env.GOOGLE_CALLBACK_URL || 'https://stockerai-backend.onrender.com/api/auth/google/callback';
+  if (process.env.NODE_ENV === 'production' || process.env.RENDER === 'true') {
+    return 'https://stockerai-backend.onrender.com/api/auth/google/callback';
   }
   return process.env.LOCAL_GOOGLE_CALLBACK_URL || 'http://localhost:5000/api/auth/google/callback';
 };

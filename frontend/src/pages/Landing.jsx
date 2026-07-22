@@ -32,7 +32,7 @@ import {
 
 export default function Landing() {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, logout } = useAuthStore();
   const { isDark, toggleTheme } = useThemeStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState(null);
@@ -184,13 +184,21 @@ export default function Landing() {
               {isDark ? <Sun size={15} /> : <Moon size={15} />}
             </button>
             {isAuthenticated ? (
-              <Link
-                to="/dashboard"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-blue-600 to-cyan-500 text-white hover:opacity-95 shadow-md shadow-blue-600/10 transition"
-              >
-                Go to Dashboard
-                <ArrowRight size={15} />
-              </Link>
+              <div className="flex items-center gap-3">
+                <Link
+                  to="/dashboard"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-blue-600 to-cyan-500 text-white hover:opacity-95 shadow-md shadow-blue-600/10 transition"
+                >
+                  Go to Dashboard
+                  <ArrowRight size={15} />
+                </Link>
+                <button
+                  onClick={() => logout && logout()}
+                  className={`text-xs font-semibold hover:text-red-500 transition px-2 py-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}
+                >
+                  Logout
+                </button>
+              </div>
             ) : (
               <>
                 <Link
