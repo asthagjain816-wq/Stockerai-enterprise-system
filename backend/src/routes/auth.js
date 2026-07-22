@@ -245,21 +245,37 @@ router.post('/login', (req, res, next) => {
 });
 
 // Google Login Initiate
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/google', (req, res, next) => {
+  const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
+  const callbackURL = isProduction
+    ? 'https://stockerai-backend.onrender.com/api/auth/google/callback'
+    : 'http://localhost:5000/api/auth/google/callback';
+
+  passport.authenticate('google', {
+    scope: ['profile', 'email'],
+    callbackURL,
+  })(req, res, next);
+});
 
 // Google Callback
 router.get(
   '/google/callback',
   (req, res, next) => {
-    const frontendUrl = process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173';
+    const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
+    const frontendUrl = isProduction ? 'https://stockerai-enterprise-system.vercel.app' : (process.env.FRONTEND_URL || 'http://localhost:5173');
+    const callbackURL = isProduction
+      ? 'https://stockerai-backend.onrender.com/api/auth/google/callback'
+      : 'http://localhost:5000/api/auth/google/callback';
+
     passport.authenticate('google', {
       failureRedirect: `${frontendUrl}/login`,
       session: true,
+      callbackURL,
     })(req, res, next);
   },
   (req, res) => {
-    const frontendUrl = process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173';
-    // Successful authentication
+    const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
+    const frontendUrl = isProduction ? 'https://stockerai-enterprise-system.vercel.app' : (process.env.FRONTEND_URL || 'http://localhost:5173');
     res.redirect(`${frontendUrl}/dashboard`);
   }
 );
