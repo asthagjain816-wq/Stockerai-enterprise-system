@@ -6,6 +6,7 @@ import useThemeStore from '../store/themeStore';
 import useNotificationStore from '../store/notificationStore';
 import useToastStore from '../store/toastStore';
 import Breadcrumbs from '../components/Breadcrumbs';
+import { getApiBaseUrl } from '../config/apiConfig';
 import { handleRipple } from '../utils/ripple';
 import { SkeletonRow, SkeletonStats } from '../components/Skeleton';
 import EmptyState from '../components/EmptyState';
@@ -187,7 +188,7 @@ export default function Inventory() {
 
   const fetchInventory = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`, { credentials: 'include' });
+      const res = await fetch(`${getApiBaseUrl()}/api/products`, { credentials: 'include' });
       const data = await res.json();
       if (data.success) {
         setInventory(data.data);
@@ -201,7 +202,7 @@ export default function Inventory() {
 
   const fetchSuppliers = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/suppliers`, { credentials: 'include' });
+      const res = await fetch(`${getApiBaseUrl()}/api/suppliers`, { credentials: 'include' });
       const data = await res.json();
       if (data.success) {
         setSuppliers(data.data);
@@ -346,7 +347,7 @@ export default function Inventory() {
     await new Promise(resolve => setTimeout(resolve, 800));
 
     try {
-      const res = await fetch(`http://localhost:5000/api/products/${productId}`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/products/${productId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

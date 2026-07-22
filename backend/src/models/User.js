@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema(
     },
     googleId: {
       type: String,
-      sparse: true,
+      default: undefined,
     },
     avatar: {
       type: String,
@@ -31,6 +31,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// हटाया pre-save hook - यह bcrypt error दे रहा था
+const User = mongoose.model('User', userSchema);
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = User;

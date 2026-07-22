@@ -8,6 +8,7 @@ import useThemeStore from '../store/themeStore';
 import useToastStore from '../store/toastStore';
 import useLanguageStore from '../store/languageStore';
 import useConfirmStore from '../store/confirmStore';
+import { getApiBaseUrl } from '../config/apiConfig';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { SkeletonRow, SkeletonStats } from '../components/Skeleton';
 import { 
@@ -257,7 +258,7 @@ export default function Settings() {
     };
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/profile`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/auth/profile`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

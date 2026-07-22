@@ -8,6 +8,7 @@ import useLanguageStore from '../store/languageStore';
 import useToastStore from '../store/toastStore';
 import useActivityStore from '../store/activityStore';
 import useConfirmStore from '../store/confirmStore';
+import { getApiBaseUrl } from '../config/apiConfig';
 import { SkeletonRow, SkeletonStats } from '../components/Skeleton';
 import EmptyState from '../components/EmptyState';
 import AnimatedCounter from '../components/AnimatedCounter';
@@ -206,7 +207,7 @@ export default function Products() {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`, { credentials: 'include' });
+      const res = await fetch(`${getApiBaseUrl()}/api/products`, { credentials: 'include' });
       const data = await res.json();
       if (data.success) {
         setProducts(data.data);
@@ -222,7 +223,7 @@ export default function Products() {
 
   const fetchSuppliers = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/suppliers`, { credentials: 'include' });
+      const res = await fetch(`${getApiBaseUrl()}/api/suppliers`, { credentials: 'include' });
       const data = await res.json();
       if (data.success) {
         setSuppliers(data.data);
@@ -342,15 +343,16 @@ export default function Products() {
 
     try {
       let res;
+      const baseUrl = getApiBaseUrl();
       if (editingId) {
-        res = await fetch(`http://localhost:5000/api/products/${editingId}`, {
+        res = await fetch(`${baseUrl}/api/products/${editingId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
           body: JSON.stringify(payload)
         });
       } else {
-        res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`, {
+        res = await fetch(`${baseUrl}/api/products`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -405,8 +407,9 @@ export default function Products() {
   const handleBulkDelete = async () => {
     if (selectedIds.length === 0) return;
     try {
+      const baseUrl = getApiBaseUrl();
       await Promise.all(selectedIds.map(id => 
-        fetch(`http://localhost:5000/api/products/${id}`, { method: 'DELETE', credentials: 'include' })
+        fetch(`${baseUrl}/api/products/${id}`, { method: 'DELETE', credentials: 'include' })
       ));
       setProducts(prev => prev.filter(p => !selectedIds.includes(p._id)));
       showToast(`Successfully deleted ${selectedIds.length} products.`, 'success');
@@ -435,11 +438,12 @@ export default function Products() {
     });
     
     try {
+      const baseUrl = getApiBaseUrl();
       await Promise.all(selectedIds.map(id => {
         const original = products.find(p => p._id === id);
         const decoded = decodeDescription(original);
         const descObj = { ...decoded, status };
-        return fetch(`http://localhost:5000/api/products/${id}`, {
+        return fetch(`${baseUrl}/api/products/${id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -474,9 +478,10 @@ export default function Products() {
     });
     
     try {
+      const baseUrl = getApiBaseUrl();
       await Promise.all(selectedIds.map(id => {
         const original = products.find(p => p._id === id);
-        return fetch(`http://localhost:5000/api/products/${id}`, {
+        return fetch(`${baseUrl}/api/products/${id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -500,7 +505,8 @@ export default function Products() {
 
   const handleDeleteProduct = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/products/${id}`, {
+      const baseUrl = getApiBaseUrl();
+      const res = await fetch(`${baseUrl}/api/products/${id}`, {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -618,7 +624,7 @@ export default function Products() {
         };
 
         try {
-          await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`, {
+          await fetch(`${getApiBaseUrl()}/api/products`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',

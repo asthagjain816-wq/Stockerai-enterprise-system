@@ -55,7 +55,15 @@ app.use(express.urlencoded({ extended: true }));
 
 // Database
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('✅ MongoDB Connected'))
+  .then(async () => {
+    console.log('✅ MongoDB Connected');
+    try {
+      await mongoose.connection.collection('users').dropIndex('googleId_1');
+      console.log('🧹 Cleaned up legacy googleId_1 index');
+    } catch (e) {
+      // Index already dropped or doesn't exist
+    }
+  })
   .catch((err) => {
     console.error('❌ MongoDB Error:', err);
     process.exit(1);

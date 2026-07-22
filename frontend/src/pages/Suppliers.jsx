@@ -6,6 +6,7 @@ import useThemeStore from '../store/themeStore';
 import useNotificationStore from '../store/notificationStore';
 import useToastStore from '../store/toastStore';
 import useConfirmStore from '../store/confirmStore';
+import { getApiBaseUrl } from '../config/apiConfig';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { handleRipple } from '../utils/ripple';
 import { SkeletonRow, SkeletonStats } from '../components/Skeleton';
@@ -230,7 +231,7 @@ export default function Suppliers() {
         };
 
         try {
-          await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/suppliers`, {
+          await fetch(`${getApiBaseUrl()}/api/suppliers`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -253,7 +254,7 @@ export default function Suppliers() {
 
   const fetchSuppliers = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/suppliers`, { credentials: 'include' });
+      const res = await fetch(`${getApiBaseUrl()}/api/suppliers`, { credentials: 'include' });
       const data = await res.json();
       if (data.success) {
         setSuppliers(data.data);
@@ -270,7 +271,7 @@ export default function Suppliers() {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`, { credentials: 'include' });
+      const res = await fetch(`${getApiBaseUrl()}/api/products`, { credentials: 'include' });
       const data = await res.json();
       if (data.success) {
         setProducts(data.data);
@@ -282,7 +283,7 @@ export default function Suppliers() {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders`, { credentials: 'include' });
+      const res = await fetch(`${getApiBaseUrl()}/api/orders`, { credentials: 'include' });
       const data = await res.json();
       if (data.success) {
         setOrders(data.data);
@@ -352,15 +353,16 @@ export default function Suppliers() {
 
     try {
       let res;
+      const baseUrl = getApiBaseUrl();
       if (editingId) {
-        res = await fetch(`http://localhost:5000/api/suppliers/${editingId}`, {
+        res = await fetch(`${baseUrl}/api/suppliers/${editingId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
           body: JSON.stringify(payload)
         });
       } else {
-        res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/suppliers`, {
+        res = await fetch(`${baseUrl}/api/suppliers`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -421,7 +423,7 @@ export default function Suppliers() {
 
   const handleDeleteSupplier = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/suppliers/${id}`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/suppliers/${id}`, {
         method: 'DELETE',
         credentials: 'include'
       });

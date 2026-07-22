@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import useAuthStore from '../store/authStore';
 import useThemeStore from '../store/themeStore';
 import useToastStore from '../store/toastStore';
+import { getApiBaseUrl } from '../config/apiConfig';
 import { Mail, Lock, User, Eye, EyeOff, UserPlus, X } from 'lucide-react';
 import Landing from './Landing';
 
@@ -61,7 +62,12 @@ export default function Register() {
 
     setLoading(true);
     try {
-      await register(formData);
+      await register({
+        fullName: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.passwordConfirm,
+      });
       navigate('/dashboard');
     } catch (err) {
       setError(err.message || 'Registration failed');
@@ -72,7 +78,7 @@ export default function Register() {
 
   const handleGoogleLogin = () => {
     try {
-      window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/google`;
+      window.location.href = `${getApiBaseUrl()}/api/auth/google`;
     } catch (error) {
       console.error('Google login error:', error);
       setError('Google login configuration error');

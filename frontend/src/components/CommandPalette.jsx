@@ -4,6 +4,7 @@ import { Search, Folder, Box, ShoppingCart, Users, FileText, Settings, Sparkles,
 import useThemeStore from '../store/themeStore';
 import useActivityStore from '../store/activityStore';
 import useLanguageStore from '../store/languageStore';
+import { getApiBaseUrl } from '../config/apiConfig';
 
 export default function CommandPalette({ isOpen, onClose }) {
   const navigate = useNavigate();
@@ -26,10 +27,11 @@ export default function CommandPalette({ isOpen, onClose }) {
       // Load products, suppliers, orders
       const fetchPaletteData = async () => {
         try {
+          const baseUrl = getApiBaseUrl();
           const [resP, resS, resO] = await Promise.all([
-            fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`, { credentials: 'include' }).then(r => r.ok ? r.json() : { success: false }),
-            fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/suppliers`, { credentials: 'include' }).then(r => r.ok ? r.json() : { success: false }),
-            fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders`, { credentials: 'include' }).then(r => r.ok ? r.json() : { success: false })
+            fetch(`${baseUrl}/api/products`, { credentials: 'include' }).then(r => r.ok ? r.json() : { success: false }),
+            fetch(`${baseUrl}/api/suppliers`, { credentials: 'include' }).then(r => r.ok ? r.json() : { success: false }),
+            fetch(`${baseUrl}/api/orders`, { credentials: 'include' }).then(r => r.ok ? r.json() : { success: false })
           ]);
           setCatalogItems({
             products: resP.success ? resP.data : [],

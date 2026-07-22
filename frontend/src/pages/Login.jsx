@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import useAuthStore from '../store/authStore';
 import useThemeStore from '../store/themeStore';
 import useToastStore from '../store/toastStore';
+import { getApiBaseUrl } from '../config/apiConfig';
 import { Mail, Lock, Eye, EyeOff, LogIn, X } from 'lucide-react';
 import Landing from './Landing';
 
@@ -65,7 +66,7 @@ export default function Login() {
 
   const handleGoogleLogin = () => {
     try {
-      window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/google`;
+      window.location.href = `${getApiBaseUrl()}/api/auth/google`;
     } catch (error) {
       console.error('Google login error:', error);
       setError('Google login configuration error');

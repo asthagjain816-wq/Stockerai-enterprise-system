@@ -1,5 +1,6 @@
-const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://stockerai-backend.onrender.com');
-const API_BASE_URL = `${API_BASE}/api`;
+import { getApiBaseUrl } from '../config/apiConfig';
+
+const API_BASE_URL = `${getApiBaseUrl()}/api`;
 
 export const api = {
   // Auth

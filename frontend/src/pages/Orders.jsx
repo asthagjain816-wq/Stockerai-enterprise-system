@@ -6,6 +6,7 @@ import useThemeStore from '../store/themeStore';
 import useNotificationStore from '../store/notificationStore';
 import useToastStore from '../store/toastStore';
 import useConfirmStore from '../store/confirmStore';
+import { getApiBaseUrl } from '../config/apiConfig';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { handleRipple } from '../utils/ripple';
 import { SkeletonRow, SkeletonStats } from '../components/Skeleton';
@@ -153,7 +154,7 @@ export default function Orders() {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders`, { credentials: 'include' });
+      const res = await fetch(`${getApiBaseUrl()}/api/orders`, { credentials: 'include' });
       const data = await res.json();
       if (data.success) {
         setOrders(data.data);
@@ -167,7 +168,7 @@ export default function Orders() {
 
   const fetchSuppliers = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/suppliers`, { credentials: 'include' });
+      const res = await fetch(`${getApiBaseUrl()}/api/suppliers`, { credentials: 'include' });
       const data = await res.json();
       if (data.success) {
         setSuppliers(data.data);
@@ -181,7 +182,7 @@ export default function Orders() {
 
   const fetchInventory = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`, { credentials: 'include' });
+      const res = await fetch(`${getApiBaseUrl()}/api/products`, { credentials: 'include' });
       const data = await res.json();
       if (data.success) {
         setInventory(data.data);
@@ -250,7 +251,7 @@ export default function Orders() {
     };
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -274,7 +275,7 @@ export default function Orders() {
 
   const handleUpdateStatus = async (orderId, newStatus) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/orders/${orderId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -308,7 +309,7 @@ export default function Orders() {
       type: 'danger',
       onConfirm: async () => {
         try {
-          const res = await fetch(`http://localhost:5000/api/orders/${id}`, {
+          const res = await fetch(`${getApiBaseUrl()}/api/orders/${id}`, {
             method: 'DELETE',
             credentials: 'include'
           });

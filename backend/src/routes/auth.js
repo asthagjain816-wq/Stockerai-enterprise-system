@@ -18,9 +18,20 @@ passport.use(
     },
     async (email, password, done) => {
       try {
-        const user = await User.findOne({ email }).select('+password');
+        if (!email || !password) {
+          return done(null, false, { message: 'Please enter both email and password' });
+        }
+
+        const cleanEmail = email.trim().toLowerCase();
+        const user = await User.findOne({ email: cleanEmail }).select('+password');
         if (!user) {
           return done(null, false, { message: 'User not found' });
+        }
+
+        if (!user.password) {
+          return done(null, false, {
+            message: 'This account was created with Google Sign-In. Please click "Continue with Google".',
+          });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
@@ -115,7 +126,8 @@ passport.deserializeUser(async (id, done) => {
 // Register
 router.post('/register', async (req, res) => {
   try {
-    const { fullName, email, password, confirmPassword } = req.body;
+    const { fullName, email, password, confirmPassword, passwordConfirm } = req.body;
+    const effectiveConfirmPassword = confirmPassword || passwordConfirm;
 
     if (!fullName || !email || !password) {
       return res.status(400).json({
@@ -124,14 +136,16 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    if (password !== confirmPassword) {
+    if (password !== effectiveConfirmPassword) {
       return res.status(400).json({
         success: false,
         message: 'Passwords do not match',
       });
     }
 
-    const existingUser = await User.findOne({ email });
+    const cleanEmail = email.trim().toLowerCase();
+
+    const existingUser = await User.findOne({ email: cleanEmail });
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -144,8 +158,8 @@ router.post('/register', async (req, res) => {
 
     // Create user with hashed password
     const user = new User({
-      fullName,
-      email,
+      fullName: fullName.trim(),
+      email: cleanEmail,
       password: hashedPassword,
     });
 
@@ -153,9 +167,10 @@ router.post('/register', async (req, res) => {
 
     req.logIn(user, (err) => {
       if (err) {
+        console.error('Login error after register:', err);
         return res.status(500).json({
           success: false,
-          message: 'Login failed',
+          message: 'Login failed after registration',
         });
       }
 
@@ -172,6 +187,18 @@ router.post('/register', async (req, res) => {
     });
   } catch (error) {
     console.error('Register Error:', error);
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email already registered',
+      });
+    }
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({
+        success: false,
+        message: Object.values(error.errors).map((e) => e.message).join(', '),
+      });
+    }
     res.status(500).json({
       success: false,
       message: error.message || 'Registration failed',
@@ -240,9 +267,10 @@ router.get(
 // Get Current User
 router.get('/me', (req, res) => {
   if (!req.isAuthenticated()) {
-    return res.status(401).json({
+    return res.status(200).json({
       success: false,
       message: 'Not authenticated',
+      user: null,
     });
   }
 

@@ -6,6 +6,7 @@ import useNotificationStore from '../store/notificationStore';
 import useLanguageStore from '../store/languageStore';
 import useToastStore from '../store/toastStore';
 import useConfirmStore from '../store/confirmStore';
+import { getApiBaseUrl } from '../config/apiConfig';
 import NotificationPanel from './NotificationPanel';
 import { 
   Bell, 
@@ -60,10 +61,11 @@ export default function Navbar({ sidebarOpen, setSidebarOpen, searchVal, onSearc
   useEffect(() => {
     const fetchSearchData = async () => {
       try {
+        const baseUrl = getApiBaseUrl();
         const [resP, resS, resO] = await Promise.all([
-          fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`, { credentials: 'include' }).then(r => r.ok ? r.json() : { success: false }),
-          fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/suppliers`, { credentials: 'include' }).then(r => r.ok ? r.json() : { success: false }),
-          fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders`, { credentials: 'include' }).then(r => r.ok ? r.json() : { success: false })
+          fetch(`${baseUrl}/api/products`, { credentials: 'include' }).then(r => r.ok ? r.json() : { success: false }),
+          fetch(`${baseUrl}/api/suppliers`, { credentials: 'include' }).then(r => r.ok ? r.json() : { success: false }),
+          fetch(`${baseUrl}/api/orders`, { credentials: 'include' }).then(r => r.ok ? r.json() : { success: false })
         ]);
         setSearchItems({
           products: resP.success ? resP.data : [],
