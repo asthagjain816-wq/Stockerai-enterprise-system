@@ -5,6 +5,7 @@ import Sidebar from '../components/Sidebar';
 import useThemeStore from '../store/themeStore';
 import useToastStore from '../store/toastStore';
 import useActivityStore from '../store/activityStore';
+import useAuthStore from '../store/authStore';
 import AnimatedCounter from '../components/AnimatedCounter';
 import { getApiBaseUrl } from '../config/apiConfig';
 import { handleRipple } from '../utils/ripple';
@@ -38,6 +39,7 @@ export default function Dashboard() {
   const { isDark } = useThemeStore();
   const { showToast } = useToastStore();
   const { activities, addActivity } = useActivityStore();
+  const { user } = useAuthStore();
 
   // Core Data States
   const [statsData, setStatsData] = useState({
@@ -342,7 +344,7 @@ export default function Dashboard() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 dark:border-slate-850 pb-4">
             <div>
               <h1 className={`text-2xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                Welcome back, Astha 👋
+                Welcome back, {user?.fullName || 'User'} 👋
               </h1>
               <p className={`text-xs mt-1 font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                 Manage your inventory efficiently.

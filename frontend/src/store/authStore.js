@@ -37,7 +37,7 @@ const useAuthStore = create((set) => ({
   },
 
   login: async (email, password) => {
-    set({ loading: true, error: null });
+    set({ user: null, isAuthenticated: false, loading: true, error: null });
     try {
       const response = await fetch(`${API_URL}/login`, {
         method: 'POST',
@@ -50,17 +50,17 @@ const useAuthStore = create((set) => ({
         set({ user: data.user, isAuthenticated: true, loading: false });
         return data;
       } else {
-        set({ error: data.message, loading: false });
+        set({ user: null, isAuthenticated: false, error: data.message, loading: false });
         throw new Error(data.message);
       }
     } catch (err) {
-      set({ error: err.message, loading: false });
+      set({ user: null, isAuthenticated: false, error: err.message, loading: false });
       throw err;
     }
   },
 
   register: async (formData) => {
-    set({ loading: true, error: null });
+    set({ user: null, isAuthenticated: false, loading: true, error: null });
     try {
       const response = await fetch(`${API_URL}/register`, {
         method: 'POST',
@@ -73,11 +73,11 @@ const useAuthStore = create((set) => ({
         set({ user: data.user, isAuthenticated: true, loading: false });
         return data;
       } else {
-        set({ error: data.message, loading: false });
+        set({ user: null, isAuthenticated: false, error: data.message, loading: false });
         throw new Error(data.message);
       }
     } catch (err) {
-      set({ error: err.message, loading: false });
+      set({ user: null, isAuthenticated: false, error: err.message, loading: false });
       throw err;
     }
   },
