@@ -277,7 +277,16 @@ router.get(
   (req, res) => {
     const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
     const frontendUrl = isProduction ? 'https://stockerai-enterprise-system.vercel.app' : (process.env.FRONTEND_URL || 'http://localhost:5173');
-    res.redirect(`${frontendUrl}/dashboard`);
+    
+    if (req.user) {
+      const token = req.user._id.toString();
+      const name = encodeURIComponent(req.user.fullName);
+      const email = encodeURIComponent(req.user.email);
+      const avatar = req.user.avatar ? encodeURIComponent(req.user.avatar) : '';
+      res.redirect(`${frontendUrl}/dashboard?oauth_token=${token}&oauth_name=${name}&oauth_email=${email}&oauth_avatar=${avatar}`);
+    } else {
+      res.redirect(`${frontendUrl}/login`);
+    }
   }
 );
 

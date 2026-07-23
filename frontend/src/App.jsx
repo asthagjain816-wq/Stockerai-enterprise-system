@@ -37,9 +37,36 @@ function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   useEffect(() => {
-    if (checkAuth) {
-      checkAuth();
+    // Check if redirect parameters from Google OAuth exist in URL
+    const query = new URLSearchParams(window.location.search);
+    const token = query.get('oauth_token');
+    const name = query.get('oauth_name');
+    const email = query.get('oauth_email');
+    const avatar = query.get('oauth_avatar');
+
+    if (token && name && email) {
+      const userData = {
+        id: token,
+        fullName: decodeURIComponent(name),
+        email: decodeURIComponent(email),
+        avatar: avatar ? decodeURIComponent(avatar) : null
+      };
+      
+      // Save to localStorage as mobile fallback
+      localStorage.setItem('stockerai_user', JSON.stringify(userData));
+      localStorage.setItem('stockerai_token', token);
+      
+      // Set Zustand store state
+      useAuthStore.setState({ user: userData, isAuthenticated: true, loading: false });
+
+      // Clean the URL parameters for aesthetics
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else {
+      if (checkAuth) {
+        checkAuth();
+      }
     }
+
     const pingBackend = async () => {
       try {
         await fetch(`${getApiBaseUrl()}/api/health`);

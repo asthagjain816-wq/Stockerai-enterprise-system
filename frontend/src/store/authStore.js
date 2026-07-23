@@ -11,6 +11,17 @@ const useAuthStore = create((set) => ({
 
   checkAuth: async (retries = 2) => {
     set({ loading: true, error: null });
+
+    // Check local storage fallback first
+    const storedUser = localStorage.getItem('stockerai_user');
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        set({ user: parsedUser, isAuthenticated: true, loading: false });
+        return;
+      } catch (e) {}
+    }
+
     for (let attempt = 0; attempt <= retries; attempt++) {
       try {
         const response = await fetch(`${API_URL}/me`, {
@@ -21,9 +32,11 @@ const useAuthStore = create((set) => ({
         const data = await response.json();
         if (data.success) {
           set({ user: data.user, isAuthenticated: true, loading: false });
+          localStorage.setItem('stockerai_user', JSON.stringify(data.user));
           return;
         } else {
           set({ user: null, isAuthenticated: false, loading: false });
+          localStorage.removeItem('stockerai_user');
           return;
         }
       } catch (err) {
@@ -48,13 +61,16 @@ const useAuthStore = create((set) => ({
       const data = await response.json();
       if (data.success) {
         set({ user: data.user, isAuthenticated: true, loading: false });
+        localStorage.setItem('stockerai_user', JSON.stringify(data.user));
         return data;
       } else {
         set({ user: null, isAuthenticated: false, error: data.message, loading: false });
+        localStorage.removeItem('stockerai_user');
         throw new Error(data.message);
       }
     } catch (err) {
       set({ user: null, isAuthenticated: false, error: err.message, loading: false });
+      localStorage.removeItem('stockerai_user');
       throw err;
     }
   },
@@ -71,13 +87,16 @@ const useAuthStore = create((set) => ({
       const data = await response.json();
       if (data.success) {
         set({ user: data.user, isAuthenticated: true, loading: false });
+        localStorage.setItem('stockerai_user', JSON.stringify(data.user));
         return data;
       } else {
         set({ user: null, isAuthenticated: false, error: data.message, loading: false });
+        localStorage.removeItem('stockerai_user');
         throw new Error(data.message);
       }
     } catch (err) {
       set({ user: null, isAuthenticated: false, error: err.message, loading: false });
+      localStorage.removeItem('stockerai_user');
       throw err;
     }
   },
@@ -85,6 +104,8 @@ const useAuthStore = create((set) => ({
   logout: async () => {
     set({ loading: true });
     try {
+      localStorage.removeItem('stockerai_user');
+      localStorage.removeItem('stockerai_token');
       await fetch(`${API_URL}/logout`, {
         method: 'POST',
         credentials: 'include',
