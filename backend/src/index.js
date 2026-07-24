@@ -4,7 +4,7 @@ const session = require('express-session');
 const passport = require('passport');
 const mongoose = require('mongoose');
 const dns = require('dns');
-const MongoStore = require('connect-mongo');
+const MongoStore = require('connect-mongo').default;
 try {
   dns.setServers(['8.8.8.8', '1.1.1.1']);
 } catch (e) {}
