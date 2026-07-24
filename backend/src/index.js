@@ -4,6 +4,7 @@ const session = require('express-session');
 const passport = require('passport');
 const mongoose = require('mongoose');
 const dns = require('dns');
+const MongoStore = require('connect-mongo');
 try {
   dns.setServers(['8.8.8.8', '1.1.1.1']);
 } catch (e) {}
@@ -79,6 +80,11 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'my_secret_key',
   resave: false,
   saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    collectionName: 'sessions',
+    ttl: 14 * 24 * 60 * 60 // 14 days session lifespan
+  }),
   cookie: { 
     httpOnly: true, 
     maxAge: 1000 * 60 * 60 * 24 * 7, 
