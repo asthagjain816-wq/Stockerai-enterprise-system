@@ -166,7 +166,7 @@ export default function Navbar({ sidebarOpen, setSidebarOpen, searchVal, onSearc
           <Search className={`absolute left-3 top-2.5 ${isDark ? 'text-slate-500' : 'text-slate-450'}`} size={15} />
           <input
             type="text"
-            placeholder="Type page route, action, or search SKU catalog..."
+            placeholder="Search catalog, routes..."
             value={searchVal || ''}
             onFocus={() => setShowSearchDropdown(true)}
             onChange={(e) => {

@@ -429,7 +429,7 @@ export default function Settings() {
       <div className={`${sidebarOpen ? 'lg:ml-64 md:ml-64' : 'md:ml-20'} ml-0 flex-1 flex flex-col transition-all duration-300 z-10 overflow-hidden relative`}>
         <Navbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-        <main className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6 space-y-6">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6 pb-24 sm:pb-8 space-y-6">
           
           {/* BREADCRUMB & HEADER SECTION */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/50 pb-4 text-left">

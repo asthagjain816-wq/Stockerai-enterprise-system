@@ -861,7 +861,7 @@ export default function Products() {
           onSearchChange={(val) => { setSearchTerm(val); setCurrentPage(1); }} 
         />
 
-        <main className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6 space-y-6 animate-slide-up">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6 pb-24 sm:pb-8 space-y-6 animate-slide-up">
           
           {/* HEADER CONTROLS */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/50 pb-4 text-left">

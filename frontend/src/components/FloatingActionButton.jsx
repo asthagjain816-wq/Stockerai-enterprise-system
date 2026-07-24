@@ -62,7 +62,7 @@ export default function FloatingActionButton() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 15 }}
             transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-            className={`fixed bottom-38 md:bottom-24 right-6 mb-1.5 space-y-2 w-48 max-h-[60vh] overflow-y-auto pr-1 rounded-2xl border p-2 shadow-2xl backdrop-blur-md z-50 scrollbar-thin ${
+            className={`fixed bottom-[148px] md:bottom-24 right-6 mb-1.5 space-y-2 w-48 max-h-[60vh] overflow-y-auto pr-1 rounded-2xl border p-2 shadow-2xl backdrop-blur-md z-50 scrollbar-thin ${
               isDark 
                 ? 'bg-slate-900/90 border-slate-800/80 text-slate-200 shadow-black/50' 
                 : 'bg-white/95 border-slate-200/80 text-slate-800 shadow-slate-200/40'
