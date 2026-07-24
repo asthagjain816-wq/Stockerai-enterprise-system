@@ -2,10 +2,17 @@ const express = require('express');
 const Product = require('../models/Product');
 const { isAuthenticated } = require('../middleware/authMiddleware');
 
+const { seedDatabase } = require('../utils/seeder');
+
 const router = express.Router();
 
 router.get('/', isAuthenticated, async (req, res, next) => {
   try {
+    const count = await Product.countDocuments({ isActive: true });
+    if (count < 5) {
+      await seedDatabase(req.user._id);
+    }
+
     const { page = 1, limit = 1000, search = '', category = '' } = req.query;
     
     let query = { isActive: true };
