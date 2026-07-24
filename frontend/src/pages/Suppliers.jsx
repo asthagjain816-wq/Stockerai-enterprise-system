@@ -590,7 +590,7 @@ export default function Suppliers() {
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <SlidersHorizontal size={14} className="text-blue-605 mr-1" />
+              <SlidersHorizontal size={14} className="text-blue-600 mr-1" />
 
               {/* Column Config Dropdown Toggle */}
               <div className="relative">

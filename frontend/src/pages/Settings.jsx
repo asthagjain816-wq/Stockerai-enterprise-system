@@ -81,12 +81,12 @@ export default function Settings() {
   const [pendingRoute, setPendingRoute] = useState(null);
 
   // Form Fields States
-  const [fullName, setFullName] = useState(user?.fullName || 'Astha Sethiya');
-  const [email, setEmail] = useState(user?.email || 'astha@stockerai.com');
-  const [phone, setPhone] = useState(user?.phone || '+91 98765 43210');
-  const [designation, setDesignation] = useState(user?.designation || 'Lead System Architect');
-  const [company, setCompany] = useState(user?.company || 'StockerAI Enterprise');
-  const [bio, setBio] = useState(user?.bio || 'Overseeing automated inventory pipelines, cloud warehouse allocations, and supply chain telemetry grids.');
+  const [fullName, setFullName] = useState(user?.fullName || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [phone, setPhone] = useState(user?.phone || '');
+  const [designation, setDesignation] = useState(user?.designation || '');
+  const [company, setCompany] = useState(user?.company || '');
+  const [bio, setBio] = useState(user?.bio || '');
   const [avatar, setAvatar] = useState(user?.avatar || null);
   const [backupEmail, setBackupEmail] = useState(user?.backupEmail || localStorage.getItem('erp_backup_email') || '');
 
@@ -119,15 +119,28 @@ export default function Settings() {
     { id: 2, device: 'Safari on iPhone 15 Pro (Mumbai)', status: 'Active 2h ago', ip: '103.88.201.55' }
   ]);
 
+  // Sync state when user profile is loaded or changes (e.g. from Google login)
+  useEffect(() => {
+    if (user) {
+      setFullName(prev => prev || user.fullName || '');
+      setEmail(prev => prev || user.email || '');
+      setPhone(prev => prev || user.phone || '');
+      setDesignation(prev => prev || user.designation || '');
+      setCompany(prev => prev || user.company || '');
+      setBio(prev => prev || user.bio || '');
+      setAvatar(prev => prev || user.avatar || null);
+    }
+  }, [user]);
+
   // Track field changes to mark form dirty
   useEffect(() => {
     const hasAvatarChanged = avatar !== user?.avatar;
-    const hasNameChanged = fullName !== (user?.fullName || 'Astha Sethiya');
-    const hasEmailChanged = email !== (user?.email || 'astha@stockerai.com');
-    const hasPhoneChanged = phone !== (user?.phone || '+91 98765 43210');
-    const hasDesignationChanged = designation !== (user?.designation || 'Lead System Architect');
-    const hasCompanyChanged = company !== (user?.company || 'StockerAI Enterprise');
-    const hasBioChanged = bio !== (user?.bio || 'Overseeing automated inventory pipelines, cloud warehouse allocations, and supply chain telemetry grids.');
+    const hasNameChanged = fullName !== (user?.fullName || '');
+    const hasEmailChanged = email !== (user?.email || '');
+    const hasPhoneChanged = phone !== (user?.phone || '');
+    const hasDesignationChanged = designation !== (user?.designation || '');
+    const hasCompanyChanged = company !== (user?.company || '');
+    const hasBioChanged = bio !== (user?.bio || '');
     const hasBackupEmailChanged = backupEmail !== (user?.backupEmail || localStorage.getItem('erp_backup_email') || '');
     
     if (
@@ -296,12 +309,12 @@ export default function Settings() {
       cancelText: 'Continue Editing',
       type: 'warning',
       onConfirm: () => {
-        setFullName(user?.fullName || 'Astha Sethiya');
-        setEmail(user?.email || 'astha@stockerai.com');
-        setPhone(user?.phone || '+91 98765 43210');
-        setDesignation(user?.designation || 'Lead System Architect');
-        setCompany(user?.company || 'StockerAI Enterprise');
-        setBio(user?.bio || 'Overseeing automated inventory pipelines, cloud warehouse allocations, and supply chain telemetry grids.');
+        setFullName(user?.fullName || '');
+        setEmail(user?.email || '');
+        setPhone(user?.phone || '');
+        setDesignation(user?.designation || '');
+        setCompany(user?.company || '');
+        setBio(user?.bio || '');
         setAvatar(user?.avatar || null);
         setBackupEmail(user?.backupEmail || localStorage.getItem('erp_backup_email') || '');
         setAppName('StockerAI Enterprise');
@@ -933,7 +946,7 @@ export default function Settings() {
                         isDark ? 'bg-slate-900/60 border-slate-800/80 backdrop-blur-md' : 'bg-white/80 border-slate-100 backdrop-blur-md'
                       }`}>
                         <div className="pb-3 border-b border-slate-100 dark:border-slate-850 flex items-center gap-2">
-                          <Shield size={15} className="text-blue-650" />
+                          <Shield size={15} className="text-blue-600" />
                           <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">Multi-Factor Checklists</h3>
                         </div>
 
@@ -945,7 +958,7 @@ export default function Settings() {
                             </div>
                             <button
                               onClick={() => { setTwoFactor(!twoFactor); showToast(twoFactor ? '2FA Deactivated' : '2FA Enabled', 'info'); }}
-                              className={`w-10 h-5.5 rounded-full p-0.5 transition-colors ${twoFactor ? 'bg-blue-650' : 'bg-slate-200 dark:bg-slate-800'}`}
+                              className={`w-10 h-5.5 rounded-full p-0.5 transition-colors ${twoFactor ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-800'}`}
                             >
                               <div className={`w-4.5 h-4.5 rounded-full bg-white transition-transform ${twoFactor ? 'translate-x-4.5' : 'translate-x-0'}`} />
                             </button>
@@ -970,7 +983,7 @@ export default function Settings() {
                         isDark ? 'bg-slate-900/60 border-slate-800/80 backdrop-blur-md' : 'bg-white/80 border-slate-100 backdrop-blur-md'
                       }`}>
                         <div className="pb-3 border-b border-slate-100 dark:border-slate-850 flex items-center gap-2">
-                          <Clock size={15} className="text-blue-655" />
+                          <Clock size={15} className="text-blue-600" />
                           <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">Session Audit Keys</h3>
                         </div>
 
@@ -983,7 +996,7 @@ export default function Settings() {
                               </div>
                               <button
                                 onClick={() => handleRevokeSession(session.id)}
-                                className="px-3 py-1 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 text-red-655 font-bold rounded-lg transition"
+                                className="px-3 py-1 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 text-red-600 font-bold rounded-lg transition"
                               >
                                 Revoke
                               </button>

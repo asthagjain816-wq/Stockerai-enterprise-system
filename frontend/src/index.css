@@ -97,11 +97,21 @@ code {
   .print\:hidden {
     display: none !important;
   }
-  body, main, #root {
+  html, body, #root, .flex.h-screen, .flex-1.flex.flex-col {
+    height: auto !important;
+    overflow: visible !important;
+    position: static !important;
     background: white !important;
     color: black !important;
+  }
+  main {
+    height: auto !important;
+    overflow: visible !important;
+    position: static !important;
     padding: 0 !important;
     margin: 0 !important;
+    background: white !important;
+    color: black !important;
   }
   .md\:ml-64, .md\:ml-20 {
     margin-left: 0 !important;

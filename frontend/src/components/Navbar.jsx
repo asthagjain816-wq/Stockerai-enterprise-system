@@ -279,18 +279,7 @@ export default function Navbar({ sidebarOpen, setSidebarOpen, searchVal, onSearc
           {formattedDate}
         </span>
 
-        {/* Theme Cycle Trigger */}
-        <button
-          onClick={toggleTheme}
-          className={`p-2 rounded-xl transition border ${
-            isDark ? 'hover:bg-slate-900/50 border-transparent dark:hover:border-slate-800/40 text-yellow-400' : 'hover:bg-slate-50 text-slate-550 border border-slate-200/60'
-          }`}
-          title="Toggle Theme Mode"
-        >
-          {theme === 'light' && <Sun size={15} />}
-          {theme === 'dark' && <Moon size={15} />}
-          {theme === 'system' && <Laptop size={15} className="text-blue-500" />}
-        </button>
+
  
         {/* Notifications Bell */}
         <div className="relative">
@@ -316,7 +305,7 @@ export default function Navbar({ sidebarOpen, setSidebarOpen, searchVal, onSearc
             {user?.avatar ? (
               <img src={user.avatar} alt="User Profile" className="w-8 h-8 rounded-lg object-cover shadow-sm transition transform hover:scale-105" />
             ) : (
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-650 text-white font-extrabold flex items-center justify-center shadow-sm text-xs transition transform hover:scale-105 select-none">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-extrabold flex items-center justify-center shadow-sm text-xs transition transform hover:scale-105 select-none">
                 {user?.fullName?.charAt(0).toUpperCase() || 'A'}
               </div>
             )}
